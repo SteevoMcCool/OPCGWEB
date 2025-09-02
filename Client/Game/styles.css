@@ -7,10 +7,31 @@
 #g_toptions {
     height: calc(calc(100vh - 30px) / 3);
     width: 100%;
+    overflow-y: auto;
 }
 #g_midicons {
-    height: 30px;
+    padding-bottom: 1px;
+    padding-top: 1px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
     width: 100%;
+}
+html {
+  overflow-x: auto; /* horizontal scroll enabled */
+  overflow-y: hidden; /* hide vertical scrollbar */
+}
+html::-webkit-scrollbar {
+  height: 6px;  /* horizontal scrollbar thickness */
+  width: 0;     /* vertical scrollbar hidden */
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.4);
+  border-radius: 3px;
 }
 
 #g_chat {
@@ -58,10 +79,7 @@
     position: relative;
     top:0px;
 }
-#g_oppHand, #g_yourHand {
-    width: 100%;
-    height: 20%;
-}
+
 
 #g_bigAhhCard {
     width: 100%;
@@ -97,6 +115,16 @@
 }
 .charZone > .card {
     margin-top:0px;
+    height: 100%;
+}
+.donnZone {
+       overflow-x: scroll;
+    overflow-y: hidden;
+}
+.donnZone > .card {
+    margin-top: 0px;
+    height: 100%;
+ 
 }
 
 
@@ -115,6 +143,8 @@ body{
     display: flex;
     overflow: hidden;
     transform-style: preserve-3d;
+      perspective: 7000px;
+
 }
 
 .Announcer {
@@ -127,7 +157,7 @@ body{
     max-height: 50vh;   
     overflow: hidden;
     pointer-events: none;
-    z-index: 100;
+    z-index: 10000;
 }
 
 .Message {
@@ -161,6 +191,7 @@ body{
     top:0px;
     left:0px;
     background-color: rgba(127,127,127,0.4);
+    z-index: 999;
 }
 
 .twc {
@@ -172,6 +203,7 @@ body{
 .gbg {
     background-position: center;
     background-size: cover;
+    
 }
 .gb2 {
        background-position: center;
@@ -185,6 +217,14 @@ body{
     display: inline-block;
     width: 1.35em;
     height: 1.35em;
+}
+.big.emoji  {
+    width: unset;
+    height: 30%;
+    aspect-ratio: 1;
+}
+button.emoji {
+    border-radius: 40%;
 }
 
 .br {
@@ -211,6 +251,28 @@ body{
     transition: all 0.3s;
 
 }
+.deck {
+    display: flex;
+    flex-direction: column;
+    justify-content:space-around;
+    align-items:space-around;
+    align-content: space-around;
+    background-color: rgba(127,127,127,0.4);
+
+}
+.deck > button {
+    background-color: rgba(0,0,0,0.7);
+    color:white;
+    border-radius: 100px;
+    border: 2px solid white;
+    width:90%;
+    margin: auto auto;
+}
+.deck > .h {
+    height: 50%;
+    width: 100%;
+    border-radius: 0px;
+}
 .card:hover, .deck:hover {
     scale: 1.05;
 }
@@ -228,14 +290,78 @@ body{
     z-index: 4;
 }
 #g_usExtraZones, #g_oppExtraZones {
-    height:20.5%;
+    height:22%;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    top:0px;
+    position: relative;
+}
+#g_usPanel, #g_oppPanel{
+    height: 15%;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    background-color: rgb(100,227,100);
+    position: relative;
+    top: 0px;
+    padding: 0px;
+    display: flex;
+}
+#g_usPanel>button, #g_oppPanel>button {
+    height: 100%;
+    margin: 0px;
+    margin-right: 5px;
+    padding: 0px;
 }
 #g_usEZ, #g_oppEZ{
-    height: 100%;
+    height: 90%;
     display:flex;
     flex-wrap: nowrap;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    transform-style: preserve-3d;
+    z-index: 3;
 }
+#g_usEZ > .card, #g_oppEZ > .card {
+    margin-top: 0px;
+    height: 100%;
+    z-index: 10;
+}
+#g_usEZ>.card:hover{
+    z-index: 40;
+    translate: 0px -10px;
+}
+button {
+    transition: all 0.3s;
+}
+button:hover {
+    scale:1.05;
+    filter:  url(#add-brightness);
+}
+button:active{
+    scale: 0.97;
+    filter: url(#rem-brightness) ;
+}
+
+.showModes {
+    position: absolute;
+    bottom: 1%;
+    display: flex;
+    overflow: visible;
+}
+
+.showModes > .emoji {
+    width: 0px;
+    min-width: 0px;       
+    height: 0px;
+    min-height: 0px;
+    height: unset;
+    flex: 1 1 25%;
+    margin: 1px;
+    aspect-ratio: 1;
+    padding: 1px;
+    border-radius: 3px;
+    outline: unset;
+    border: 1px solid black;
+}
+

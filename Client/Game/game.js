@@ -6,12 +6,17 @@ let deb = false;
 ////////////////////////////////////////////////
 let usEZview = 'hand'
 let oppEZview = 'hand'
-let hoverCard = false
+let hoverCard = -1
 let focusCard = false
 let onNextInput = false
+let nextInputCount = 1
 let busy = false
 let expandedDeck = false
 ///////////////////////////////////////////////
+function deprefix(k="unkind",pref='un') {
+    if (k.substring(0,pref.length) == pref) return k.substring(pref.length)
+    return k
+}
 const hiddenIconStr = `
   <div class="gbg" style="
     width: 24px; 
@@ -76,6 +81,7 @@ function expandDeck(deck,name,us){
             carddiv.onmouseenter = ()=>{
                 console.log('me')
                 hoverCard = card.uid
+                if (!us) return 0;
                 carddiv.innerHTML += `
                     <div class = 'twc' style='width:100%;margin:0px; overflow-y:auto'>
                     <center>
@@ -206,14 +212,14 @@ function loadOurSide(game,us,opp) {
                     if (onNextInput) {
                         id (`d_${k}`).innerHTML = 
                             `
-                                <button id='g_to_0'>Top</button>
-                                <button id='g_to_${v.length}'>Bottom</button>
+                                <button id='g_to_0' class='h'>Top</button>
+                                <button id='g_to_${v.length}'  class='h'>Bottom</button>
                             `
                         id('to_0').onclick = ()=>{
                             onNextInput({is:'Zone', spot: 0, name: k })
                         }
                         id(`to_${v.length}`).onclick = ()=>{
-                            onNextInput({is:'Zone', spot: v.lengt, name: k })
+                            onNextInput({is:'Zone', spot: v.length, name: k })
                         }
                     }else{
                         id (`d_${k}`).innerHTML = 
@@ -224,19 +230,22 @@ function loadOurSide(game,us,opp) {
                                 <button id='g_shuffle'>Shuffle</button>
                             `
                         id(`movetop`).onclick = async ()=>{
-                            if (!v.length) return announcer.announce('Deck is empty',4,['rd'])
-                                                await sleep(10);
-
+                            if (!v.length) return announcer.announce(`${k} is empty`,4,['rd'])
+                            await sleep(10);
+                            document.querySelectorAll('.ourcard').forEach(card=>{
+                                card.style.pointerEvents = 'none'
+                            })
+                            nextInputCount = 1
                             onNextInput = async (data={})=>{
-                                onNextInput = false
-                                if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                                busy = true
                                 console.log(data)
-                                if (data.is == 'Zone') {
-                                    let res =  await connection.promise('moveCard',{uid:v[0].uid,name:data.name,spot:data.spot})
-                                }else {
-                                    let res =  await connection.promise('attachCard',{uid:v[0].uid,adornee:data.uid})
-                                }
+                                if (data.is != 'Zone') return false;
+                                if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
+                                onNextInput = false
+                                document.querySelectorAll('.ourcard').forEach(card=>{
+                                    card.style.pointerEvents = 'all'
+                                })
+                                busy = true;
+                                let res =  await connection.promise('moveCard',{uid:v[0].uid,name:data.name,spot:data.spot})
                                 busy = false
                             }
                         }
@@ -286,7 +295,7 @@ function loadOurSide(game,us,opp) {
                 })
             }
         }else{
-            uspanel.insertAdjacentHTML(`beforeend`,`<button id='g_switchTo${k}'>${k}  (${v.length})</button>`)
+            uspanel.insertAdjacentHTML(`beforeend`,`<button id='g_switchTo${k}'>${deprefix(k,'ez_')}  (${v.length})</button>`)
             if (k == usEZview) {
                 let s = ''
                 v.forEach(card=>{
@@ -298,15 +307,28 @@ function loadOurSide(game,us,opp) {
                 })
                 id('usEZ').innerHTML = s;
             }
+            id(`switchTo${k}`).onmouseenter = function(){console.log('AAAAAAh')};
             id(`switchTo${k}`).onclick = function(){
                 if (onNextInput) onNextInput({name:k,is:'Zone'})
                 usEZview = k;
-                setupBoard(game,order)
+                loadOurSide(game,us,opp)
             }
         }
     }
 
-
+    uspanel.insertAdjacentHTML('beforeend',`
+        <span style='padding: 0px 2px; background-color:gray'><input id='g_addZoneIn' style='width:5.7em;'><button id='g_addZoneBu' style='padding:0px'>+</button></span>    
+    `)
+    id('addZoneBu').onclick = ()=>{
+        let name = id('addZoneIn').value 
+        console.log(name)
+        if (name.length < 2) return announcer.announce('Zone name must be at least 2 characters',4,['rd'])
+        if (busy) return false;
+        busy=true
+        connection.request('addZone',{name},()=>{
+            busy=false
+        })
+    }
     document.querySelectorAll('.ourcard').forEach(carddiv=>{
         let uid = Number(carddiv.id.split('c_')[1])
         let card = cardsInGame[uid]
@@ -318,27 +340,27 @@ function loadOurSide(game,us,opp) {
                 if (onNextInput) return false;
 
             carddiv.innerHTML += `
-                <div class = 'twc options' style='width:100%;margin:0px; overflow-y:auto'>
-                <center>
-                    <button id='g_movecard' class='emoji' style='background-image:url("https://cdn-icons-png.flaticon.com/512/271/271222.png")'></button>
-                    <button id='g_tapcard' class='emoji' style="background-image:url('https://images.vexels.com/media/users/3/136745/isolated/preview/8f36b91326bec8f8100da818b58e20de-right-rotate-arrow.png')"></button>
-                    <button id='g_attachcard' class='emoji' style="background-image:url('https://i.ibb.co/Nd6cg2x6/IMG-5341-1.png');   "></button>
-
-                    <br><br>
-                    <div id='g_show'  style='display:flex; width:100%;    justify-content: space-around;'> 
-                        <button id='g_nthr' class ='condensed'>..</button>
-                        <button id='g_oyou' class='condensed'>0.</button>
-                        <button id='g_oopp' class='condensed'>.0</button>
-                        <button id='g_allp' class='condensed'>00</button>
+                <div class = 'twc options' style='width:100%;height:100%;margin:0px; overflow-y:auto'>
+                    <center style='margin-top:10px'>
+                        <button id='g_movecard'  class='big emoji' style='background-image:url("https://cdn-icons-png.flaticon.com/512/271/271222.png")'></button>
+                        <button id='g_tapcard' class='big emoji' style="background-image:url('https://images.vexels.com/media/users/3/136745/isolated/preview/8f36b91326bec8f8100da818b58e20de-right-rotate-arrow.png')"></button>
+                        <button id='g_attachcard' class='big emoji' style="background-image:url('https://i.ibb.co/Nd6cg2x6/IMG-5341-1.png');   "></button>
+                    </center>
+                    <div class='showModes' style='display:flex; width:100%;    justify-content: space-around;'> 
+                            <button id='g_nthr' class ='emoji'style="background-image:url('https://i.ibb.co/Tx0J374D/eyesclosed.png')" ></button>
+                            <button id='g_oyou' class='emoji' style="background-image:url('https://i.ibb.co/hxHH4D06/blueeyeopen.png')"></button>
+                            <button id='g_oopp' class='emoji' style="background-image:url('https://i.ibb.co/Cpk12G8Q/redeyeopen.png')"></button>
+                            <button id='g_allp' class='emoji' style="background-image:url('https://i.ibb.co/hxHH4D06/blueeyeopen.png'), url('https://i.ibb.co/Cpk12G8Q/redeyeopen.png')"></button>
                     </div>
-                </center>
                 </div>
+
             `
             id('movecard').onclick = async ()=>{
                 await sleep(10);
                 document.querySelectorAll('.ourcard').forEach(card=>{
                     card.style.pointerEvents = 'none'
                 })
+                 nextInputCount = 1
                 onNextInput = async (data={})=>{
                     console.log(data)
                     if (data.is != 'Zone') return false;
@@ -354,6 +376,8 @@ function loadOurSide(game,us,opp) {
             }
             id('attachcard').onclick = async ()=>{
                 await sleep(10);
+                                        nextInputCount = 1
+
                 onNextInput = async (data={})=>{
                     console.log(data)
                     if (data.is == 'Zone') return false;
@@ -431,8 +455,8 @@ function loadOppSide(game,us,opp){
                     if (onNextInput) {
                         id (`d_${k}_o`).innerHTML = 
                             `
-                                <button id='g_to_0'>Top</button>
-                                <button id='g_to_${v.length}'>Bottom</button>
+                                <button id='g_to_0' class='h'>Top</button>
+                                <button id='g_to_${v.length}' class='h'>Bottom</button>
                             `
                         id('to_0').onclick = ()=>{
                             onNextInput({is:'Zone', spot: 0, name: k })
@@ -486,7 +510,7 @@ function loadOppSide(game,us,opp){
                 })
             }
         }else{
-            oppPanel.insertAdjacentHTML(`beforeend`,`<button id='g_switchTo${k}_o'>${k} (${v.length})</button>`)
+            oppPanel.insertAdjacentHTML(`beforeend`,`<button id='g_switchTo${k}_o'>${deprefix(k,'ez_')} (${v.length})</button>`)
             if (k == oppEZview) {
                 let s = ''
                 v.forEach(card=>{
@@ -521,6 +545,7 @@ function setupBoard(game,order,updateps){
 
     if (order[0]==userId) us = game.player1, opp = game.player2;
     onNextInput = false
+
     gather(game)
 
     if (updateps[order.findIndex(uid=>uid==userId)] ) loadOurSide(game,us,opp);
@@ -642,9 +667,111 @@ id('send').onclick = function() {
     })
     setTimeout(()=>id('msg').value = '',1)
 }
-document.onkeypress = (event)=>{
-    if (!event.shiftKey && (event.key.toLocaleLowerCase() == 'enter' || event.key.toLocaleLowerCase() == 'return') ){
+id('refreshAll').onclick = async function(){
+    if (busy) return 1;
+    busy = true;
+    await connection.promise('refresh',{});
+    busy = false;
+}
+id('searchCard').onclick = function(){
+    document.body.insertAdjacentHTML('beforeend',`
+        <div class="overlay" id='g_cardSearch'>
+            <div class = "twc gbg" style='padding-left:0.5em;width:55vh; height: 70vh; background-color: rgb(50,100,190); border-radius:4vh;color:white'>
+                <br>
+                <span style='display:inline-block; width:3.7em'>Name:</span> <input id='g_nameinput'>
+                <br>              
+                <span style='display:inline-block;width:3.7em'>Set:</span> <input id='g_setinput'>
+                <br>
+                <span>Custom?</span> <input type=checkbox id='g_checkinput'>
+                <br>
+                <center> 
+                    <button id='g_serbu'>Search</button> 
+                    <div style='display:flex; height: calc(80% - 4em);overflow-x:auto;overflow-y:hidden' id='g_results'>
+
+                    </div>
+                    <button style='background-color:red; position:absolute; bottom:0px;transform:translate(-50%,-50%)' id='g_exitcs'>EXIT</button
+                </center>
+            </div>
+
+        </div>
+    `)
+    id('serbu').onclick = async ()=>{
+        let name = id('nameinput').value 
+        let set = id('setinput').value 
+        let cus = id ('checkinput').checked 
+        if (name.length > 2 || set.length > 2){
+            if (busy) return announcer.announce("Server busy",4,['yel'])
+            busy = true
+            let cards = await fetch(`/refinedCardSearch?set=${set}&name=${name}${cus? '&cus=1':''}`)
+            busy = false;
+            cards = await cards.json()
+            console.log(cards)
+            id('results').innerHTML =''
+            cards.forEach(card=>{
+                id('results').insertAdjacentHTML('beforeend',`
+                 <div id='g_sc_${card.uid}_${cus}' class='card gbg' style="background-image:url('${card.imgs[0]}'); display:flex; flex-direction:column-reverse;">
+                        <button id='g_add2mdb_${card.uid}_${cus}'>Add to main deck bottom</button>
+                        <button id='g_add2mdt_${card.uid}_${cus}'>Add to main deck top</button> 
+                        <button id='g_add2play_${card.uid}_${cus}'>Add to play</button>
+                        <button id='g_add2hand_${card.uid}_${cus}'>Add to hand</button> 
+                 </div>   
+                `)
+                id(`add2mdb_${card.uid}_${cus}`).onclick =  async  ()=>{
+                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
+                    busy = true;
+                    await connection.promise('insertCard', { id: card.uid,cus, name: 'mainDeck', spot: 9999999});
+                    busy = false;
+                    announcer.announce('Card Inserted!',4,['grn'])
+                }
+                id(`add2mdt_${card.uid}_${cus}`).onclick =  async ()=>{
+                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
+                    busy = true;
+                    await connection.promise('insertCard', { id: card.uid,cus, name: 'mainDeck', spot: 0});
+                    busy = false;
+                        announcer.announce('Card Inserted!',4,['grn'])
+
+                }
+                id(`add2play_${card.uid}_${cus}`).onclick =  async ()=>{
+                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
+                    busy = true;
+                    await connection.promise('insertCard', { id: card.uid,cus, name: 'characterZone', spot: 0});
+                    busy = false;
+                        announcer.announce('Card Inserted!',4,['grn'])
+            
+                }
+                id(`add2hand_${card.uid}_${cus}`).onclick = async  ()=>{
+                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
+                    busy = true;
+                    await connection.promise('insertCard', { id: card.uid,cus, name: 'hand', spot: 0});
+                    busy = false;
+                        announcer.announce('Card Inserted!',4,['grn'])
+                }
+            })
+        }else {
+            announcer.announce('Please search by name/set with 3+ characters',5,['rd'])
+        }
+    }
+    id('exitcs').onclick = ()=> id('cardSearch').remove()
+}
+
+let kd = {}
+document.onkeydown = (event)=>{
+    let key = event.key.toLocaleUpperCase()
+    kd[key] = true;
+    if (event.ctrlKey &&  kd['R'] && kd['E'] && kd['M']) {
+        if (hoverCard < 0) return ;
+        let card = cardsInGame[hoverCard]
+    }
+}
+document.onkeyup = (event)=>{
+    let key = event.key.toLocaleUpperCase()
+    kd[key] = false
+    if (!event.shiftKey && (key == 'ENTER' || key == 'RETURN') ){
         id('send').onclick()
+    }else if (key == 'N'){
+        
+    }else if (key == 'S'){
+
     }
 }
 function extractTags(str) {
@@ -701,7 +828,7 @@ connection.setResponder("chat",(data)=>{
 
 
 setInterval(()=>{
-    if (hoverCard) {
+    if (hoverCard >=0) {
         id('bigAhhCard').style.backgroundImage = `url('${cardsInGame[hoverCard].image}')`
         id('bigAhhCard').innerHTML = `${cardsInGame[hoverCard].name} (cost: ${cardsInGame[hoverCard].cost})`
     }else{

@@ -92,6 +92,7 @@ class GAME {
         zone.push(new CARD(this.lcuid++,basecard.imgs[0],backImage,basecard.name,basecard.cost,zone))
     }
     attach(card1,card2){
+        if (card1 == card2) return 'false card1 == card2'
         let x = card1.where.indexOf(card1);
         if (x>=0) card1.where.splice(x,1);
         if (this.nameOf(card2.where) == 'NULLZONE') return 'false card2 is already attached'
@@ -103,7 +104,25 @@ class GAME {
         if (x>=0) card.where.splice(x,1);
         zone.splice(spot,0,card)
         card.where = zone
+        card.active = true
+        console.log(this.ownerOf(zone))
+        let DA = this[`player${this.ownerOf(zone)}`].donArea
+        for (let i = card.attached.length - 1; i >= 0; i--) {
+            const c = card.attached[i];
+            this.move(c, DA, DA.length, [1,1]);
+            console.log("Moved ", DA.length);
+            c.active = false;
+        }
         if (revealed) card.revealed = revealed
+    }
+    ownerOf(zone){
+        for (let [k,v] of Object.entries(this.player1)) {
+            if (v==zone) return 1;
+        }
+        for (let [k,v] of Object.entries(this.player2)) {
+            if (v==zone) return 2;
+        }
+        return 0
     }
     reset(pnum){
         this[`player${pnum}`] = {

@@ -130,6 +130,17 @@ server.app.get(`/cardsby`,async (req, res)=>{
     let arr = JSON.parse(fs.readFileSync("./Data/ccbase.json").toString()).filter(c=>c.uploader==req.query.user)
     return res.send(JSON.stringify(arr));
 })
+server.app.get(`/refinedCardSearch`,async (req,res)=>{
+    let arr =[]
+    console.log(req.query)
+    if (req.query.custom) arr = JSON.parse(fs.readFileSync("./Data/ccbase.json").toString())
+    else arr = JSON.parse(fs.readFileSync("./Data/cardbase.json").toString())
+    arr = arr
+            .filter(c=>c.name.toLocaleLowerCase().includes(req.query.name.toLocaleLowerCase())) 
+            .filter(c=>c.set.toLocaleLowerCase().includes(req.query.set.toLocaleLowerCase()));
+    console.log(arr)
+    res.send(JSON.stringify( arr ) );
+})
 server.app.post('/uploadep',async (req,res)=>{
     let body = JSON.parse(req.body);
     console.log(body)
@@ -462,7 +473,7 @@ server.app.post("/setDeck",async (req,res)=>{
     sres.data.sessions.forEach(sesh => sesh == body.session ? bad = false : false)
     if (bad) return res.send(JSON.stringify({good:false,details:"Auth Error- please try logging back in."}))
     console.log(body) 
-    sres.data.decks ||= []
+    sres.data.decks = sres.data.decks || []
     sres.data.decks[body.slot]  = body.deckName + ',' + (body.custom*1 || 0) + ',' + body.deckString
     console.log(body.deckName + ',' + (body.custom*1 || 0) + ',' + body.deckString)
     sres = await SUPA.from("Users").update({decks:sres.data.decks}).eq('id',body.id)
@@ -578,9 +589,9 @@ function msgAll(players,from,body,game,eventor){
     }
 }
 server.setClientResponder('selectDeck',(client,data)=>{
-    console.log(client.state)
+    console.log(client.uid.state)
     if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
-    console.log(client,data)
+    console.log(client.uid,data)
     let deckMeta = data.deckmeta;
     let leadMeta = data.leadmeta
     let game = client.inRooms[0].game;
@@ -604,7 +615,7 @@ server.setClientResponder('selectDeck',(client,data)=>{
 })
 server.setClientResponder('tapCard',(client,data)=>{
     if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
-    console.log(client,data) 
+    console.log(client.uid,data) 
     let uid = data.uid;
     let game = client.inRooms[0].game;
     let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1    
@@ -619,10 +630,39 @@ server.setClientResponder('tapCard',(client,data)=>{
     )
     return {good:true}
 })
+server.setClientResponder('refresh',(client,data)=>{
+    if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
+    console.log(client.uid,data) 
 
+    let game = client.inRooms[0].game;
+    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1    
+    let p = game[`player${pnum}`]
+    Object.keys(p).forEach(zname=>{
+        let zone = p[zname]
+        for (let i = zone.length - 1; i >= 0; i--) {
+            const card = zone[i];
+            card.active = true;
+            for (let j = card.attached.length - 1; j >= 0; j--) {
+                const ac = card.attached[j];
+                ac.active = true;
+                if (zname != 'donArea' && zname != 'donDeck' && ac.name == 'DON!!') game.move(ac, p.donArea, 0, [1, 1]);
+                
+            }
+            if (zname != 'donArea' && zname != 'donDeck' && card.name == 'DON!!') game.move(card, p.donArea, 0, [1, 1]);
+        }
+    })
+    if (!data.silent) msgAll(
+        client.inRooms[0].players,
+        -1,
+        `$[@${client.uid}] unrested all cards and reset all don!!`,
+        game,
+        client.uid
+
+    )
+})
 server.setClientResponder('attachCard',(client,data)=>{
     if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
-    console.log(client,data) 
+    console.log(client.uid,data) 
     let uid = data.uid;
     let adornee = data.adornee
     let game = client.inRooms[0].game;
@@ -642,21 +682,25 @@ server.setClientResponder('attachCard',(client,data)=>{
 
 server.setClientResponder('moveCard',(client,data)=>{
     if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
-    console.log(client,data) 
+    console.log(client.uid,data) 
     let uid = data.uid;
     let name = data.name
     let game = client.inRooms[0].game;
-    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1    
+    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1  
+    
+    data.spot = data.spot || 0;
+    let btm  =  data.spot == game[`player${pnum}`][name].length
+    let extra = name.toLocaleLowerCase().includes('deck') ? (data.spot == 0 ? ' top' : (btm ? ' bottom' : ` spot ${data.spot+1}`)) : ''
     if (!game.move(
         game.find(uid),game[`player${pnum}`][name],
-        data.spot || 0, 
-        name.toLocaleLowerCase().includes('deck') ? [0,0]: 
-        name.toLocaleLowerCase().includes('hand') ? [pnum == 1, pnum == 2] :
+        data.spot, 
+        name.toLocaleLowerCase().includes('deck') || name.toLocaleLowerCase().substring(0,5) == 'ez_xx' ? [0,0]: 
+        name.toLocaleLowerCase().includes('hand') || name.toLocaleLowerCase().substring(0,5) == 'ez_0x' ? [pnum == 1, pnum == 2] :
         [1,1]
     ) && !data.silent) msgAll(
         client.inRooms[0].players,
         -1,
-        `$[@${client.uid}] move $[#${uid}] to ${name}`,
+        `$[@${client.uid}] moved $[#${uid}] to ${name}${extra}`,
         game,
         client.uid
 
@@ -665,9 +709,40 @@ server.setClientResponder('moveCard',(client,data)=>{
     }
     return {good:true}
 })
+server.setClientResponder('insertCard',(client,data)=>{
+    if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
+    console.log(client.uid,data) 
+    let metaid = data.id;
+    let name = data.name
+    let cus = data.cus
+    let game = client.inRooms[0].game;
+    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1  
+    let revealed = [1,1]
+    data.spot =  Math.min(game[`player${pnum}`][name].length,data.spot || 0);
+    let btm  =  data.spot == game[`player${pnum}`][name].length
+    let extra = name.toLocaleLowerCase().includes('deck') ? (data.spot == 0 ? ' top' : (btm ? ' bottom' : ` spot ${data.spot+1}`)) : ''
+    game.addCard(game[`player${pnum}`]['trash'],metaid,cus)
+    let card = game[`player${pnum}`]['trash'][game[`player${pnum}`]['trash'].length-1]
+    game.move(
+        card,
+        game[`player${pnum}`][name],
+        data.spot, 
+        revealed
+    )
+    if (!data.silent) msgAll(
+        client.inRooms[0].players,
+        -1,
+        `$[@${client.uid}] inserted $[#${card.uid}] to ${name}${extra}`,
+        game,
+        client.uid
+    ); else {
+        return {good:false}
+    }
+    return {good:true}
+})
 server.setClientResponder('chatfc',(client,data)=>{
     if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
-    console.log(client,data) 
+    console.log(client.uid,data) 
     let game = client.inRooms[0].game;
     msgAll(
         client.inRooms[0].players,
@@ -709,7 +784,7 @@ server.setClientResponder('rollDice',(client,data)=>{
 })
 server.setClientResponder('shuffle',(client,data)=>{
     if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
-    console.log(client,data) 
+    console.log(client.uid,data) 
     let name = data.name
     let game = client.inRooms[0].game;
     let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1    
@@ -720,6 +795,22 @@ server.setClientResponder('shuffle',(client,data)=>{
         client.inRooms[0].players,
         -1,
         `$[@${client.uid}] shuffled ${name}`,
+        game,
+        client.uid
+
+    )
+})
+server.setClientResponder('addZone',(client,data)=>{
+    if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
+    console.log(client.uid,data) 
+    let name = data.name
+    let game = client.inRooms[0].game;
+    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1    
+    game.addZone(game[`player${pnum}`],name)
+    if (!data.silent) msgAll(
+        client.inRooms[0].players,
+        -1,
+        `$[@${client.uid}] created new zone: ${name}`,
         game,
         client.uid
 
@@ -736,7 +827,7 @@ let showpairs =
 showpairs.forEach(pr=>{
     server.setClientResponder(pr[0],(client,data)=>{
         if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
-        console.log(client,data) 
+        console.log(client.uid,data) 
         let uid = data.uid;      
         let game = client.inRooms[0].game;
         let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1    
