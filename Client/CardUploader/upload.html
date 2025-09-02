@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Card</title>
+    <link rel="stylesheet" href="u_styles.css">
+
+</head>
+<body>
+    <div id="u_upload">
+        <div><button id="u_off">Official Released Card</button> <button id="u_cus">Custom Card</button></div>
+        <div>   <span>Name:</span><input id="u_name" placeholder="Monkey D. Luffy"> </div>
+        <div>   <span>Id: </span><input id="u_set" placeholder="ST01">-<input id="u_iid" placeholder="001"></div>
+        <div>   <span>Color:</span>                    
+            <div class="colorSelect" id="u_colorSelect">
+            </div>
+        </div>
+        <div>   <span>LSEC:</span><input id="u_type" placeholder="Leader"> </div>
+        <div>   <span>Cost:</span><input id="u_cost" placeholder="0"></div>
+        <div>   <span>Types:</span><input id="u_class" placeholder="Supernovas/Straw Hat Crew"> </div>
+        <div>   <span>Power:</span><input id="u_power" placeholder="5000"></div>
+        <div>   <span>Co. Power:</span><input id="u_cowpow" placeholder="0"> </div>
+        <div style="display: flex;">   <span>Text:</span><textarea id="u_text" cols="80" rows="3">[Activate: Main][Once Per Turn] Give this Leader or 1 of your Characters 1 rested DON!! card. </textarea></div>
+        <div>   <span>Img Links:</span>
+                <button id="u_addArt">Add Art</button>
+                <div id="u_imglinkHolder">
+
+                </div>
+        </div>
+        </div>
+        <br> <br>
+    <button id="u_upbu" style="font-size: 1.2em;">Confirm Upload</button>
+        <br><br><br><br><br>
+        <button onclick="window.location.replace('/upload')">Add New Card</button>
+
+    <button id="u_editbu">Edit Existing Card</button>
+    <script src="nav.js"></script>
+
+    <script src="upload.js" type="module"></script>
+</body>
+</html>

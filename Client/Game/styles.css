@@ -1,0 +1,241 @@
+#g_leftSide{
+    width: 20vw;
+    height: 100vh;
+    position: relative;
+    top:0px;
+}
+#g_toptions {
+    height: calc(calc(100vh - 30px) / 3);
+    width: 100%;
+}
+#g_midicons {
+    height: 30px;
+    width: 100%;
+}
+
+#g_chat {
+    height:  calc(calc(100vh - 30px) / 1.5);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+#g_msgs {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow: auto;
+}
+#g_msgs h4 {
+    margin: 2px;
+}
+#g_msgs p {
+    margin: 2px;
+    border-bottom: 1px solid black;
+}
+#g_chatinput{
+    display: flex;
+}
+#g_chatinput > textarea {
+    width: 100%;    
+    resize: none;
+}
+#g_chatinput > button {
+    padding: 0px 10px;
+}
+.bigredX {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    font-size: 2em;
+    padding: 10px;
+    border-radius: 100%;
+    background-color: red;
+}
+#g_rightSide {
+    width: 30vw;
+    height: 100vh;
+    position: relative;
+    top:0px;
+}
+#g_oppHand, #g_yourHand {
+    width: 100%;
+    height: 20%;
+}
+
+#g_bigAhhCard {
+    width: 100%;
+    height: 56%;
+}
+#g_middle {
+    height: 100vh;
+    width: 50vw;
+}
+.board {
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    grid-template-rows: 36% 36% 28%;
+    width: 50vw;
+    height: 50vh;
+    background-color: beige;
+}
+
+#g_oppBoard{
+    transform: scaleY(-1);
+}
+#g_oppBoard > * {
+    transform: scaleY(-1);
+}
+.board  > div {
+    border: 1px solid black;
+}
+.charZone {
+    grid-area: 1 / 1 / 2 / 6; 
+    display: flex;
+    position: relative;
+    top:0px
+}
+.charZone > .card {
+    margin-top:0px;
+}
+
+
+.lifeZone {
+    grid-area: 2 / 1 / 3 / 3; 
+}
+
+.donnZone {
+    grid-area: 3 / 2 / 4 / 5; 
+        display: flex;
+
+}
+
+body{
+    all:unset;
+    display: flex;
+    overflow: hidden;
+    transform-style: preserve-3d;
+}
+
+.Announcer {
+    position: fixed;
+    right:10px;
+    top: 45px;
+    width: 350px;
+    max-width: 100vw;
+    height: 350px;
+    max-height: 50vh;   
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.Message {
+    width: calc(99% - 10px);
+    border-radius: 5px;
+    padding: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.grn {
+    background-color: rgb(50,200,50);
+    color: rgb(15,85,15);
+    border: 2px solid rgb(15,85,15)
+}
+.yel {
+    background-color: rgb(220,180,0);
+    color: rgb(65,50,0);
+    border: 2px solid rgb(65,50,0)
+}
+.rd {
+    background-color: rgb(200,50,50);
+    color: rgb(85,15,15);
+    border: 2px solid rgb(85,15,15);
+}
+
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top:0px;
+    left:0px;
+    background-color: rgba(127,127,127,0.4);
+}
+
+.twc {
+    position: absolute;
+    top:50%; left:50%;
+    transform: translate(-50%, -50%);
+}
+
+.gbg {
+    background-position: center;
+    background-size: cover;
+}
+.gb2 {
+       background-position: center;
+    background-size: contain; 
+    background-repeat: no-repeat;
+}
+
+.emoji {
+    background-position: center;
+    background-size: cover;   
+    display: inline-block;
+    width: 1.35em;
+    height: 1.35em;
+}
+
+.br {
+    position: absolute;
+    bottom:0px;
+    right:0px;
+    margin: 0px;
+    padding: 0px;
+    text-shadow: 0px 0px 1px black;
+    color: rgb(50,200,50)
+}
+.zone {
+    position: relative;
+    top: 0px
+}
+.card, .deck {
+    height: 95%;
+    position: relative;
+    top:0px;
+    aspect-ratio:5 / 7;
+    margin:auto auto;
+    margin-top: 2.5%;
+        transform-style: preserve-3d;
+    transition: all 0.3s;
+
+}
+.card:hover, .deck:hover {
+    scale: 1.05;
+}
+.condensed {
+    font-size: 0.7em;
+    margin: 0;
+    padding: 0;
+    width:100%
+}
+#g_edBottom{
+    display: flex;
+    overflow: auto;
+    height: 200px;
+    width: 100vw;
+    z-index: 4;
+}
+#g_usExtraZones, #g_oppExtraZones {
+    height:20.5%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+#g_usEZ, #g_oppEZ{
+    height: 100%;
+    display:flex;
+    flex-wrap: nowrap;
+    overflow: auto;
+}

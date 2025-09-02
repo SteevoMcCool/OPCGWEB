@@ -1,0 +1,15 @@
+#h_main {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    height: 70vh;
+    width: 250px;
+}
+
+.twc {
+    position: absolute;
+    top:50%; left:50%;
+    transform: translate(-50%, -50%);
+}
+

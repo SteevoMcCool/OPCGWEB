@@ -1,0 +1,117 @@
+#u_upload {
+
+}
+
+#u_upload > div {
+    margin: 4px;
+}
+#u_upload > div > span {
+    display: inline-block;
+    width: 8em;
+}
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top:0px;
+    left:0px;
+    background-color: rgba(127,127,127,0.4);
+}
+.cup{
+ width:62.5vw;
+ height: 87.5vh;  
+ border-radius:2.85vh; 
+ display:flex; 
+ justify-content:space-around; 
+ align-content:space-around   ;
+ flex-wrap: wrap;
+}
+.twc {
+    position: absolute;
+    top:50%; left:50%;
+    transform: translate(-50%, -50%);
+}
+.cup > * {
+    margin: 20px;
+    transition:  0.3s all;
+}
+.cup > a:hover {
+    transform: scale(1.1);
+}
+.cup p {
+    background-color: rgb(240,240,240,0.5);
+    pointer-events: none;
+}
+.gbg {
+    background-position: center;
+    background-size: cover;
+}
+.colorselect {
+    position: relative;
+    top:0px;
+    height: 1em;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    display: inline-flex;
+    border: 2px solid brown;
+    border-radius: 0.4em;
+    margin: 0px;
+}
+.cs_row {
+    width: 30px;
+    height: 1em;
+    aspect-ratio: 1;
+    transition: all 0.25s;
+}
+.cs_row:hover {
+    z-index: 2;
+    scale:1.05;
+}
+input {
+    width: 14em;
+}
+#u_set, #u_iid, #u_cost, #u_power, #u_cowpow {
+    width: 4em;
+}
+
+#u_class, .imgup {
+    width: 45em;
+}
+
+
+
+.Announcer {
+    position: fixed;
+    right:10px;
+    top: 45px;
+    width: 350px;
+    max-width: 100vw;
+    height: 350px;
+    max-height: 50vh;   
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.Message {
+    width: calc(99% - 10px);
+    border-radius: 5px;
+    padding: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.grn {
+    background-color: rgb(50,200,50);
+    color: rgb(15,85,15);
+    border: 2px solid rgb(15,85,15)
+}
+.yel {
+    background-color: rgb(220,180,0);
+    color: rgb(65,50,0);
+    border: 2px solid rgb(65,50,0)
+}
+.rd {
+    background-color: rgb(200,50,50);
+    color: rgb(85,15,15);
+    border: 2px solid rgb(85,15,15);
+}

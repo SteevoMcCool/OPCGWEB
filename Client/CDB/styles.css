@@ -1,0 +1,352 @@
+
+body {
+    transform-style: preserve-3d;
+    padding: 0px;
+    margin: 0px;
+}
+#d_bigMomma {
+    display: grid;
+    grid-template-columns: 52.5% 47.5%;
+    grid-template-rows: 76% 24%;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#d_searcher {
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+#d_searchzone {
+    padding: 5px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#d_deck {
+    border: 2px solid black;
+    display: grid;
+    grid-template-rows: 70% 30%;
+    grid-template-columns: 100%;
+}
+
+#d_leaderzone {
+    background-position: right;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+#d_maindeck {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items:flex-start;
+    align-content: flex-start;
+}
+#d_maindeck > div {
+    width: 80px;
+    height: 112px;
+    background-position: center;
+    background-size: cover;
+    border-radius: 3.5px;
+    transition: all 0.4s;
+    margin: 2.5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;     
+    position: relative;
+    top:0px;  
+    transition: all 0.25s;
+}
+#d_maindeck > div:hover {
+    scale: 1.1;
+}
+.numInDeckDisplay {
+    text-align:center; 
+    font-size:1.35em; 
+    background-color: rgba(0,0,0,0.5); 
+    pointer-events: none;
+    user-select: none;
+}
+#d_subCard {
+    position: absolute;
+    top:0px;
+    height: 100%;
+}
+#d_addCard {
+    position: absolute;
+    top:0px;
+    right:0px;
+    height: 100%;
+}
+#d_select {
+    border: 2px solid black;
+    display: grid;
+    grid-template-columns: 70% 30%;
+    grid-template-rows: 100%;
+}
+#d_save {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+#d_save > button {
+    width: 100%;
+    font-size: large;
+    border-radius: 5000px;
+}
+
+
+#d_stats{
+    border: 2px solid black;
+}
+.colorselect {
+    position: relative;
+    top:0px;
+    height: 1em;
+    display: flex;
+    flex-wrap: nowrap;
+}
+.searchbar {
+    all: unset;
+    border-bottom: 1px solid black ;
+    margin-bottom: 2px;
+    padding-left: 20px;
+}
+
+.searchbar:hover  {
+    background-color: rgba(127,127,127,0.1);
+    border-radius: 4px;
+}
+
+.cs_row {
+    width: 16.67%;
+    height: 100%;
+    aspect-ratio: 1;
+    transition: all 0.25s;
+}
+.cs_row:hover {
+    z-index: 2;
+    scale:1.05;
+}
+.triangle {
+      width: 0;
+      height: 0;
+      border-left: 25px solid transparent;
+      border-right: 25px solid transparent;
+      border-bottom: 43px solid black;
+}
+
+#d_cardzone {
+    overflow: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    height: 100%;
+
+}
+
+#d_cardzone > div {
+    width: 150px;
+    height: 210px;
+    background-position: center;
+    background-size: cover;
+    border-radius: 7px;
+    transition: all 0.4s;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-content: center;
+}
+
+#d_cardzone > div:hover {
+    scale: 1.05
+}
+#d_use {
+    width: 49%;
+    min-width: min-content;
+    height: 35%;
+    margin: auto auto;
+    font-size: 3em;
+    border-radius: 500%;
+    background-color: rgba(225,225,225,0.7);
+}
+#d_inspect {
+    min-width: min-content;
+    margin: auto auto;
+    font-size: 1.2em;
+    border-radius: 3px;
+    background-color: rgba(225,225,225,0.7);
+}
+
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top:0px;
+    left:0px;
+    background-color: rgba(127,127,127,0.4);
+}
+
+.twc {
+    position: absolute;
+    top:50%; left:50%;
+    transform: translate(-50%, -50%);
+}
+
+.gbg {
+    background-position: center;
+    background-size: cover;
+}
+.dropdown {
+    position: absolute;
+    top: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.grid2x2 {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 50% 50%;    
+}
+
+#d_filter {
+    background-image: url('https://icons.veryicon.com/png/o/miscellaneous/alibaba-cloud-ui-icon-library/filter-111.png');
+    background-position: center;
+    background-size: cover;
+    border-radius: 10px;
+    width: 3em;
+    margin-left: 10px;
+    position: relative;
+    top:0px;
+}
+.filter {
+    display: flex;
+    background-color: rgb(205,205,205);
+    border: 2px solid black;
+    border-radius: 6px;
+    margin: 0px 7px;
+    padding-left: 12px;
+    padding-right: 2px;
+    text-align: center;
+    transition: all 0.3s;
+}
+.filter:hover{
+    background-color: rgb(230,230,230);
+}
+.switch {
+    margin: 1px 2px;
+    position: relative;
+    left:-7px;
+    top:50%;
+    transform: translate(0px,-50%);
+    transition: all 0.3s;
+    background-color: black;
+    height: 70%;
+    width: 8px;
+}
+
+.switch > button {
+    padding:4px 5px; 
+    position:absolute; 
+    top:0px;
+    transition: all 0.3s;
+    transform: translate(-50%,-50%);
+
+}
+
+.bflexbox {
+    display: flex;
+
+}
+input {
+    width: 10em;
+}
+input[type='number'] {
+    width: 3em;
+}
+input[type='checkbox']{
+    width: 0.7em;
+}
+
+
+#d_impCard {
+    position: fixed;
+    bottom: 0vh;
+    left: 52.5vw;
+    width: 55vh;
+    transform: translate(-100%);
+    height: 77vh;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.Announcer {
+    position: fixed;
+    right:10px;
+    top: 45px;
+    width: 350px;
+    max-width: 100vw;
+    height: 350px;
+    max-height: 50vh;   
+    overflow: hidden;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.Message {
+    width: calc(99% - 10px);
+    border-radius: 5px;
+    padding: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.grn {
+    background-color: rgb(50,200,50);
+    color: rgb(15,85,15);
+    border: 2px solid rgb(15,85,15)
+}
+.yel {
+    background-color: rgb(220,180,0);
+    color: rgb(65,50,0);
+    border: 2px solid rgb(65,50,0)
+}
+.rd {
+    background-color: rgb(200,50,50);
+    color: rgb(85,15,15);
+    border: 2px solid rgb(85,15,15);
+}
+
+
+.saveIn {
+    padding: 20px;
+    padding-top: 10px;
+    border-radius: 15px;
+}
+
+.saveIn:hover {
+    scale: 1.05;
+    background-color: rgba(127,127,127,0.4);
+}
+
+.saveSelected {
+    border: 2px dashed black;
+}
+
+.captian {
+    height: calc(21vh - 1em);
+    width: calc(15vh - 1em);
+    transition: all 0.25s;
+}
+.captian:hover {
+    scale:1.15
+}
+

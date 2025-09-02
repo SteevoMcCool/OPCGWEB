@@ -1,0 +1,87 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <link rel="stylesheet" href="g_styles.css">
+
+</head>
+<body>
+    <div id="g_leftSide">
+        <div id="g_toptions"></div>
+        <div id="g_midicons">
+            <button 
+                class="emoji" 
+                style="background-image:url('https://static.thenounproject.com/png/219525-200.png');"
+                id="g_deckSelectBu"
+            ></button>
+            <button 
+                class="emoji" 
+                style="background-image:url('https://cdn-icons-png.flaticon.com/512/60/60879.png');"
+                id="g_rollDice"
+            ></button>
+            <button 
+                class="emoji" 
+                style="background-image:url('https://cdn2.iconfinder.com/data/icons/arrows-5-2/128/Fast-Rewind-Back-Backwards-Arrows-Rewind-Previous-512.png');"
+                id="g_refreshAll"
+            ></button>
+            <span>|</span>
+            <button 
+                class="emoji" 
+                style="background-color:red; background-image:url('https://cdn-icons-png.flaticon.com/512/32/32205.png');"
+                id="g_exitGame"
+            ></button>
+        </div>
+        <div id="g_chat">
+            <div id="g_msgs"></div>
+            <div id="g_chatinput">
+                <textarea id="g_msg"></textarea>
+                <button id="g_send">></button>
+            </div>
+        </div>
+    </div>
+    <div id="g_middle">
+        <div id="g_oppBoard" class="board">
+            <div class="charZone zone " id="g_opp-characterZone">Char Zone</div>
+            <div class="lifeZone zone" id="g_opp-lifeDeck">Life</div>
+            <div class="leadZone zone" id="g_opp-leadZone">Leader Zone</div>
+            <div class="stagZone zone" id="g_opp-stageZone">Stage</div>
+            <div class="deckZone zone" id="g_opp-mainDeck">Main Deck</div>
+            <div class="donnDeck zone" id="g_opp-donDeck">D Deck</div>
+            <div class="donnZone zone" id="g_opp-donArea">DON</div>
+            <div class="trshZone zone" id="g_opp-trash">Trash</div>
+
+        </div>
+        <div id="g_usBoard" class="board">
+            <div class="charZone zone" id="g_us-characterZone">Char Zone</div>
+            <div class="lifeZone zone" id="g_us-lifeDeck">Life</div>
+            <div class="leadZone zone" id="g_us-leadZone">Leader Zone</div>
+            <div class="stagZone zone" id="g_us-stageZone">Stage</div>
+            <div class="deckZone zone" id="g_us-mainDeck">Main Deck</div>
+            <div class="donnDeck zone" id="g_us-donDeck">D Deck</div>
+            <div class="donnZone zone" id="g_us-donArea">DON</div>
+            <div class="trshZone zone" id="g_us-trash">Trash</div>
+        </div>
+    </div>
+    <div id="g_rightSide">
+        <div id="g_oppExtraZones">
+            <div id="g_oppEZ">
+
+            </div>
+            <div id="g_oppPanel"></div>
+        </div>
+        <div id="g_bigAhhCard" class = 'gb2'>
+        </div>
+        <div id="g_usExtraZones">
+            <div id="g_usPanel">
+
+            </div>
+            <div id="g_usEZ">
+
+            </div>
+
+        </div>
+    </div>
+    <script src="game.js" type="module"> </script>
+</body>
+</html>
