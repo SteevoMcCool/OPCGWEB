@@ -115,12 +115,14 @@ class GAME {
         }
         if (revealed) card.revealed = revealed
     }
-    ownerOf(zone){
+    
+    ownerOf(zoneOrCard){
+        if (zoneOrCard.where) return this.ownerOf(zoneOrCard.where)
         for (let [k,v] of Object.entries(this.player1)) {
-            if (v==zone) return 1;
+            if (v==zoneOrCard) return 1;
         }
         for (let [k,v] of Object.entries(this.player2)) {
-            if (v==zone) return 2;
+            if (v==zoneOrCard) return 2;
         }
         return 0
     }

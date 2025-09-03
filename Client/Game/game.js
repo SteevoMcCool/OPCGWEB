@@ -10,8 +10,38 @@ let hoverCard = -1
 let focusCard = false
 let onNextInput = false
 let nextInputCount = 1
+
+function addUverlay(head,body,r=255,g=0,b=0){
+    document.body.insertAdjacentHTML('beforeend',`
+        <div class= 'uverlay' style='background-image: linear-gradient(rgba(${r},${g},${b},0.4),rgba(255,0,0,0),rgba(255,0,0,0));'>
+            <h1>${head}</h1>
+            <p>${body}</p>
+        </div>
+    `)
+}
+function rmeoveUverlay(){
+    document.querySelectorAll('.uverlay').forEach(div => div.remove())
+}
 let busy = false
 let expandedDeck = false
+async function  nextInputCall(a1,a2,a3,a4) {
+    if (busy && !deb) return  announcer.announce('Please wait! Server busy',4,['yel']);
+    else if (busy) return ;
+    busy = true
+    deb = true;
+    setTimeout(() => {
+        deb = false
+    },10);
+    for (let i = 0; i < (nextInputCount||1); i++) {
+        console.log(i,nextInputCount)
+
+        if (onNextInput) await onNextInput(a1,a2,a3,a4);
+    }
+    busy = false
+    onNextInput = false 
+    rmeoveUverlay()
+    nextInputCount = 1;
+}
 ///////////////////////////////////////////////
 function deprefix(k="unkind",pref='un') {
     if (k.substring(0,pref.length) == pref) return k.substring(pref.length)
@@ -58,7 +88,7 @@ function expandDeck(deck,name,us){
     document.querySelectorAll('.overlay').forEach(div=>div.remove())
     document.body.insertAdjacentHTML('beforeend',`
         <div class="overlay">
-                    <button class='bigredX'>X</button>
+                    <button class='bigredX exit'>X</button>
                     <div class = "twc gbg expandedDeck">
                         <div id='g_edTop'>
                             ${name}
@@ -98,82 +128,72 @@ function expandDeck(deck,name,us){
                         <br>
                         <div id='g_show'>Show Mode:<br>
                         <button id='g_nthr'>..</button>
-                        <button id='g_oyou'>O.</button>
-                        <button id='g_oopp'>.O</button>
-                        <button id='g_allp'>OO</button>
+                        <button id='g_oyou'>0.</button>
+                        <button id='g_oopp'>.0</button>
+                        <button id='g_allp'>00</button>
                         </div>
                     </center>
                     </div>
                 `
                 id('moveToHand').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('moveCard', { uid: card.uid, name: 'hand', spot: 0 });
-                    busy = false;
+                    
                 };
 
                 id('moveToPlay').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('moveCard', { uid: card.uid, name: 'characterZone', spot: 0 });
-                    busy = false;
+                    
                 };
 
                 id('moveToTrash').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('moveCard', { uid: card.uid, name: 'trash', spot: 0 });
-                    busy = false;
+                    
                 };
 
                 id('moveToLife').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('moveCard', { uid: card.uid, name: 'lifeDeck', spot: 0 });
-                    busy = false;
+                    
                 };
 
                 id('moveToTop').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('moveCard', { uid: card.uid, name, spot: 0 }); 
-                    busy = false;
+                    
                 };
 
                 id('moveToBtm').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('moveCard', { uid: card.uid, name, spot: deck.length }); 
-                    busy = false;
+                    
                 };
 
                 // Show mode handlers
                 id('oyou').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('oyou', { uid: card.uid });
-                    busy = false;
+                    
                 };
 
                 id('oopp').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('oopp', { uid: card.uid });
-                    busy = false;
+                    
                 };
 
                 id('nthr').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('nthr', { uid: card.uid });
-                    busy = false;
+                    
                 };
 
                 id('allp').onclick = async () => {
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('allp', { uid: card.uid });
-                    busy = false;
+                    
                 };
             }
             carddiv.onmouseleave = ()=>{
@@ -191,7 +211,7 @@ function loadOurSide(game,us,opp) {
         if (expandedDeck) {
             if (expandedDeck[0] == 1 && expandedDeck[1]==k) expandDeck(v,k,1)
         }
-        console.log(k,html)
+        //console.log(k,html)
         if (html) {
             if (k.toLocaleLowerCase().includes('deck') || k.toLocaleLowerCase().includes('trash')){   
                 if (k.toLocaleLowerCase().includes('life')){
@@ -216,10 +236,12 @@ function loadOurSide(game,us,opp) {
                                 <button id='g_to_${v.length}'  class='h'>Bottom</button>
                             `
                         id('to_0').onclick = ()=>{
-                            onNextInput({is:'Zone', spot: 0, name: k })
+                            console.log('clicktop')
+                            nextInputCall({is:'Zone', spot: 0, name: k })
                         }
                         id(`to_${v.length}`).onclick = ()=>{
-                            onNextInput({is:'Zone', spot: v.length, name: k })
+                            console.log('clickbtm')
+                            nextInputCall({is:'Zone', spot: v.length, name: k })
                         }
                     }else{
                         id (`d_${k}`).innerHTML = 
@@ -236,25 +258,29 @@ function loadOurSide(game,us,opp) {
                                 card.style.pointerEvents = 'none'
                             })
                             nextInputCount = 1
+                            addUverlay(`Moving top <span class="boxed" id='g_r2num'>1</span> card(s) from ${k}`, "Click the area you wish to move it to or right click to cancel",20,100,220)
+                            console.log("good")
+                            let z = [v[0]]
+                            let i = 0
                             onNextInput = async (data={})=>{
                                 console.log(data)
+                                if (i >=v.length) return announcer.announce(`${k} is empty`,4,['rd'])
                                 if (data.is != 'Zone') return false;
-                                if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                                onNextInput = false
-                                document.querySelectorAll('.ourcard').forEach(card=>{
+                                                            document.querySelectorAll('.ourcard').forEach(card=>{
                                     card.style.pointerEvents = 'all'
                                 })
-                                busy = true;
-                                let res =  await connection.promise('moveCard',{uid:v[0].uid,name:data.name,spot:data.spot})
-                                busy = false
+                                ;
+                                let res =  await connection.promise('moveCard',{uid:z[0].uid,name:data.name,spot:data.spot})
+                                                                z[0] = v[++i]
                             }
+                                                    console.log("good2")
+
                         }
                         id('expand').onclick = ()=> expandDeck(v,k,1)
                         id('shuffle').onclick = async ()=> {
-                            if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                            busy = true;
+                                                    ;
                             let res =  await connection.promise('shuffle',{name:k})
-                            busy = false
+                            
                         }
                     }
                 }
@@ -309,7 +335,7 @@ function loadOurSide(game,us,opp) {
             }
             id(`switchTo${k}`).onmouseenter = function(){console.log('AAAAAAh')};
             id(`switchTo${k}`).onclick = function(){
-                if (onNextInput) onNextInput({name:k,is:'Zone'})
+                if (onNextInput) nextInputCall({name:k,is:'Zone'})
                 usEZview = k;
                 loadOurSide(game,us,opp)
             }
@@ -333,7 +359,7 @@ function loadOurSide(game,us,opp) {
         let uid = Number(carddiv.id.split('c_')[1])
         let card = cardsInGame[uid]
         carddiv.onclick = ()=>{
-            if (onNextInput) onNextInput({uid})
+            if (onNextInput) nextInputCall({uid})
         }
         carddiv.onmouseenter = ()=>{
             hoverCard = uid
@@ -361,64 +387,59 @@ function loadOurSide(game,us,opp) {
                     card.style.pointerEvents = 'none'
                 })
                  nextInputCount = 1
+                addUverlay(`Moving ${(card || {name:'a card'}).name}`, "Click the area you wish to move it to or right click to cancel" ,20,100,220)
                 onNextInput = async (data={})=>{
                     console.log(data)
                     if (data.is != 'Zone') return false;
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    onNextInput = false
+                                    onNextInput = false
                     document.querySelectorAll('.ourcard').forEach(card=>{
                         card.style.pointerEvents = 'all'
                     })
-                    busy = true;
+                    ;
                     let res =  await connection.promise('moveCard',{uid,name:data.name,spot:data.spot})
-                    busy = false
+                    
                 }
             }
             id('attachcard').onclick = async ()=>{
                 await sleep(10);
                                         nextInputCount = 1
+                addUverlay(`Attaching ${(card || {name:'a card'}).name}`, "Click the card you wish to attach it to or right click to cancel")
 
                 onNextInput = async (data={})=>{
                     console.log(data)
                     if (data.is == 'Zone') return false;
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    onNextInput = false
+                                    onNextInput = false
 
-                    busy = true;
+                    ;
                         let res =  await connection.promise('attachCard',{uid,adornee:data.uid})
-                    busy = false
+                    
                 }
            
             }
             id('tapcard').onclick = async ()=>{
-                if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                busy = true;
+                            ;
                 let res =  await connection.promise('tapCard',{uid})
-                busy = false
+                
             }
             id('oyou').onclick = async ()=>{
-                if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                busy = true;
+                            ;
                 let res =  await connection.promise('oyou',{uid})
-                busy = false
+                
             }
             id('oopp').onclick = async ()=>{
-                if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                busy = true;
+                            ;
                 let res =  await connection.promise('oopp',{uid})
-                busy = false
+                
             } 
             id('nthr').onclick = async ()=>{
-                if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                busy = true;
+                            ;
                 let res =  await connection.promise('nthr',{uid})
-                busy = false
+                
             }
             id('allp').onclick = async ()=>{
-                if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                busy = true;
+                            ;
                 let res =  await connection.promise('allp',{uid})
-                busy = false
+                
             }
         }
         carddiv.onmouseleave = ()=>{
@@ -459,10 +480,10 @@ function loadOppSide(game,us,opp){
                                 <button id='g_to_${v.length}' class='h'>Bottom</button>
                             `
                         id('to_0').onclick = ()=>{
-                            onNextInput({is:'Zone', spot: 0, name: k })
+                            nextInputCall({is:'Zone', spot: 0, name: k })
                         }
                         id(`to_${v.length}`).onclick = ()=>{
-                            onNextInput({is:'Zone', spot: v.lengt, name: k })
+                            nextInputCall({is:'Zone', spot: v.lengt, name: k })
                         }
                     }else{
                         id (`d_${k}_o`).innerHTML = 
@@ -547,11 +568,11 @@ function setupBoard(game,order,updateps){
 
     gather(game)
 
-    if (updateps[order.findIndex(uid=>uid==userId)] ) loadOurSide(game,us,opp),    onNextInput = false;
+    if (updateps[order.findIndex(uid=>uid==userId)] ) loadOurSide(game,us,opp),  (nextInputCount <= 1) ?  onNextInput = false :0;
     if (updateps[order.findIndex(uid=>uid!=userId)]) loadOppSide(game,us,opp)
     document.querySelectorAll('.zone').forEach(zonediv=>{
         zonediv.onclick = ()=>{
-            if (onNextInput) onNextInput({name:zonediv.id.split('-')[1],is:'Zone'})
+            if (onNextInput) nextInputCall({name:zonediv.id.split('-')[1],is:'Zone'})
         }
     })
 }
@@ -612,21 +633,26 @@ function promptDeckSelect(){
     document.body.insertAdjacentHTML("beforeend",
     `<div class="overlay" id='g_deckSelect'>
         <div class = "twc gbg" style='width:70vw; height: 70vh; background-color: rgb(220,160,200); border-radius:4vh'>
-            <div style='display:flex'>
+            <br>
+            <div class='dselmain'>
                 ${dstr}
             </div>
+            <br>
             <p>OR, paste link: <input id='g_decklink' placeholder='from this site only!'> <button id='g_lpaste'>Submit</button></p>
+            <br>
+            <button style='background-color:red; position:absolute; bottom:0px; left:50%;transform:translate(-50%,-50%)' id='g_exitds' class='exit'>EXIT</button>
         </div>
     </div>
     `)
+    id('exitds').onclick = ()=> id('deckSelect').remove()
     user.decks.forEach(deck=>{
         let {name,deckmeta,leadmeta} = readDeckMeta(deck)
         id(`choose_${name}`).onclick = async ()=>{
             console.log(name,busy,deckmeta,leadmeta)
             if (busy) return false;
-            busy = true;
+            ;
             let res =  await connection.promise('selectDeck',{deckmeta,leadmeta})
-            busy = false;
+            
             if (!res) announcer.announce('Try again!',4,['rd'])
             id('deckSelect').remove()
         }
@@ -636,9 +662,9 @@ function promptDeckSelect(){
             let decklink = id('decklink').value
             if (!decklink.includes(host)) return [busy=false,announcer.announce("Error: link must be from this site!",4,['rd'])];
             let [name,deckmeta, leadmeta]= readDeckMeta(decklink.split('ld=')[1].split('&')[0])
-            busy = true;
+            ;
             let res =  await connection.promise('selectDeck',{deckmeta,leadmeta})
-            busy = false;
+            
             if (!res) announcer.announce('Try again!',4,['rd'])
             id('deckSelect').remove()        
     }
@@ -654,9 +680,9 @@ id('exitGame').onclick = async ()=>{
 }
 id('rollDice').onclick = async ()=>{
     if (busy) return 1;
-    busy = true;
+    ;
     await connection.promise('rollDice',{});
-    busy = false;
+    
 }
 id('send').onclick = function() {
     let v = id('msg').value + ''
@@ -668,9 +694,9 @@ id('send').onclick = function() {
 }
 id('refreshAll').onclick = async function(){
     if (busy) return 1;
-    busy = true;
+    ;
     await connection.promise('refresh',{});
-    busy = false;
+    
 }
 id('searchCard').onclick = function(){
     document.body.insertAdjacentHTML('beforeend',`
@@ -688,7 +714,7 @@ id('searchCard').onclick = function(){
                     <div style='display:flex; height: calc(80% - 4em);overflow-x:auto;overflow-y:hidden' id='g_results'>
 
                     </div>
-                    <button style='background-color:red; position:absolute; bottom:0px;transform:translate(-50%,-50%)' id='g_exitcs'>EXIT</button
+                    <button style='background-color:red; position:absolute; bottom:0px;transform:translate(-50%,-50%)' id='g_exitcs' class='exit'>EXIT</button
                 </center>
             </div>
 
@@ -701,9 +727,9 @@ id('searchCard').onclick = function(){
         console.log(cus)
         if (name.length > 2 || set.length > 2){
             if (busy) return announcer.announce("Server busy",4,['yel'])
-            busy = true
+            
             let cards = await fetch(`/refinedCardSearch?set=${set}&name=${name}${cus? '&cus=1':''}`)
-            busy = false;
+            
             cards = await cards.json()
             console.log(cards)
             id('results').innerHTML =''
@@ -717,33 +743,29 @@ id('searchCard').onclick = function(){
                  </div>   
                 `)
                 id(`add2mdb_${card.uid}_${cus}`).onclick =  async  ()=>{
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('insertCard', { id: card.uid,cus, name: 'mainDeck', spot: 9999999});
-                    busy = false;
+                    
                     announcer.announce('Card Inserted!',4,['grn'])
                 }
                 id(`add2mdt_${card.uid}_${cus}`).onclick =  async ()=>{
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('insertCard', { id: card.uid,cus, name: 'mainDeck', spot: 0});
-                    busy = false;
+                    
                         announcer.announce('Card Inserted!',4,['grn'])
 
                 }
                 id(`add2play_${card.uid}_${cus}`).onclick =  async ()=>{
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('insertCard', { id: card.uid,cus, name: 'characterZone', spot: 0});
-                    busy = false;
+                    
                         announcer.announce('Card Inserted!',4,['grn'])
             
                 }
                 id(`add2hand_${card.uid}_${cus}`).onclick = async  ()=>{
-                    if (busy) return announcer.announce('Please wait! Server busy',4,['yel']);
-                    busy = true;
+                                    ;
                     await connection.promise('insertCard', { id: card.uid,cus, name: 'hand', spot: 0});
-                    busy = false;
+                    
                         announcer.announce('Card Inserted!',4,['grn'])
                 }
             })
@@ -763,6 +785,19 @@ document.onkeydown = (event)=>{
         let card = cardsInGame[hoverCard]
     }
 }
+document.oncontextmenu = (e)=>{
+    if (onNextInput){
+        e.preventDefault()
+        onNextInput = false;
+                                document.querySelectorAll('.ourcard').forEach(card=>{
+                                    card.style.pointerEvents = 'all'
+                                })
+        nextInputCount = 1
+        rmeoveUverlay()
+    }else {
+
+    }
+}
 document.onkeyup = (event)=>{
     let key = event.key.toLocaleUpperCase()
     kd[key] = false
@@ -772,6 +807,40 @@ document.onkeyup = (event)=>{
         
     }else if (key == 'S'){
 
+    }else if (key=='M'){
+        if (event.altKey && !onNextInput && hoverCard >=0){
+            console.log('hi')
+            busy = true
+            connection.request('topCardAttachedTo',{uid:hoverCard}, async function (data) {
+                busy = false
+                if (!data.name) return announcer.announce('Card has no attached cards',4,['rd'])
+                let {name, uid} = data 
+                await sleep(1);
+                document.querySelectorAll('.ourcard').forEach(card=>{
+                    card.style.pointerEvents = 'none'
+                })
+                nextInputCount = 1
+                addUverlay(`Moving ${name} (currently attached)`, "Click the area you wish to move it to or right click to cancel" ,116,4,220)
+                onNextInput = async (data={})=>{
+                    console.log(data)
+                    if (data.is != 'Zone') return false;
+                    onNextInput = false
+                    document.querySelectorAll('.ourcard').forEach(card=>{
+                        card.style.pointerEvents = 'all'
+                    })
+                    ;
+                    let res =  await connection.promise('moveCard',{uid,name:data.name,spot:data.spot})
+                }               
+            })
+        }
+    }else if (key.charCodeAt(0) > '0'.charCodeAt(0) && key.charCodeAt(0) <= '9'.charCodeAt(0) ) {
+        nextInputCount = key.charCodeAt(0) - '0'.charCodeAt(0);
+        (id('r2num') || {}).innerHTML = key;
+        console.log(nextInputCount)
+    }else if (key=='ESC' || key == 'ESCAPE' || key == 'BACKSPACE'){
+        document.querySelectorAll('.exit').forEach(bu=>{
+            bu.onclick()
+        }) 
     }
 }
 function extractTags(str) {
@@ -807,8 +876,8 @@ function reformat(){
     document.querySelectorAll('.ref').forEach(div=>{
         let uid = div.classList.toString().split('-')[1].split(' ')[0]
         let type = div.classList.toString().split('-')[0].split(' ')[1]
-        console.log(uid,type)
-        if (type == 'c') div.innerHTML = cardsInGame[uid].name
+        //console.log(uid,type)
+        if (type == 'c' && cardsInGame[uid]) div.innerHTML = cardsInGame[uid].name
     })
 }
 connection.setResponder("chat",(data)=>{

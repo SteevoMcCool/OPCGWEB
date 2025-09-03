@@ -619,14 +619,15 @@ server.setClientResponder('tapCard',(client,data)=>{
     let uid = data.uid;
     let game = client.inRooms[0].game;
     let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1    
+    if ( game.ownerOf(game.find(uid))!= pnum) return  {good:false,details:'This is not your card'}
+
     game.find(uid).tap();
     if (!data.silent) msgAll(
         client.inRooms[0].players,
         -1,
-        `$[@${client.uid}] tapped $[#${uid}] `,
+        `$[@${client.uid}] ${game.find(uid) ? 'un':''}tapped $[#${uid}] `,
         game,
         client.uid
-
     )
     return {good:true}
 })
@@ -666,7 +667,9 @@ server.setClientResponder('attachCard',(client,data)=>{
     let uid = data.uid;
     let adornee = data.adornee
     let game = client.inRooms[0].game;
-    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1    
+    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1  
+    if ( game.ownerOf(game.find(uid))!= pnum) return  {good:false,details:'This is not your card'}
+  
     if (!game.attach(game.find(uid),game.find(adornee)) && !data.silent) msgAll(
         client.inRooms[0].players,
         -1,
@@ -690,6 +693,7 @@ server.setClientResponder('moveCard',(client,data)=>{
     
     data.spot = data.spot || 0;
     let btm  =  data.spot == game[`player${pnum}`][name].length
+    if ( game.ownerOf(game.find(uid))!= pnum) return  {good:false,details:'This is not your card'}
     let extra = name.toLocaleLowerCase().includes('deck') ? (data.spot == 0 ? ' top' : (btm ? ' bottom' : ` spot ${data.spot+1}`)) : ''
     if (!game.move(
         game.find(uid),game[`player${pnum}`][name],
@@ -815,6 +819,19 @@ server.setClientResponder('addZone',(client,data)=>{
         client.uid
 
     )
+})
+server.setClientResponder('topCardAttachedTo',(client,data)=>{
+    if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
+    console.log(client.uid,data) 
+    let uid = data.uid;
+    let game = client.inRooms[0].game;
+    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1    
+    let card= game.find(uid).attached[0]
+    if (!card) return {};
+    return {
+        name: card.revealed[pnum-1] ? card.name : 'a card',
+        uid: card.uid
+    }
 })
 let showpairs = 
     [
