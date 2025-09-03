@@ -365,3 +365,6 @@ button:active{
     border: 1px solid black;
 }
 
+#g_attachCard {
+    background-color: rgb(120,120,120);
+}

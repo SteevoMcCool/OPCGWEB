@@ -133,7 +133,7 @@ server.app.get(`/cardsby`,async (req, res)=>{
 server.app.get(`/refinedCardSearch`,async (req,res)=>{
     let arr =[]
     console.log(req.query)
-    if (req.query.custom) arr = JSON.parse(fs.readFileSync("./Data/ccbase.json").toString())
+    if (req.query.cus) arr = JSON.parse(fs.readFileSync("./Data/ccbase.json").toString())
     else arr = JSON.parse(fs.readFileSync("./Data/cardbase.json").toString())
     arr = arr
             .filter(c=>c.name.toLocaleLowerCase().includes(req.query.name.toLocaleLowerCase())) 

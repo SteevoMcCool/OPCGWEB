@@ -109,7 +109,7 @@ id('editbu').onclick = async function(){
 
 if (replacing){
     document.body.insertAdjacentHTML('afterbegin',`<h2>WARNING - EDITING EXISTING CARD</h2>`)
-    let ccList = (await (await fetch('./ccbase.json')).json()).filter(c => c.class) ;
+    let ccList = (await (await fetch('./ccbase.json')).json());
 
     id('cus').onclick();
     let card = ccList[replacing];

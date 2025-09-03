@@ -524,7 +524,7 @@ function loadOppSide(game,us,opp){
             }
             id(`switchTo${k}_o`).onclick = function(){
                 oppEZview = k;
-                setupBoard(game,order)
+                loadOppSide(game,us,opp)
             }
         }
     }
@@ -544,11 +544,10 @@ function setupBoard(game,order,updateps){
     let opp = game.player1  
 
     if (order[0]==userId) us = game.player1, opp = game.player2;
-    onNextInput = false
 
     gather(game)
 
-    if (updateps[order.findIndex(uid=>uid==userId)] ) loadOurSide(game,us,opp);
+    if (updateps[order.findIndex(uid=>uid==userId)] ) loadOurSide(game,us,opp),    onNextInput = false;
     if (updateps[order.findIndex(uid=>uid!=userId)]) loadOppSide(game,us,opp)
     document.querySelectorAll('.zone').forEach(zonediv=>{
         zonediv.onclick = ()=>{
@@ -699,6 +698,7 @@ id('searchCard').onclick = function(){
         let name = id('nameinput').value 
         let set = id('setinput').value 
         let cus = id ('checkinput').checked 
+        console.log(cus)
         if (name.length > 2 || set.length > 2){
             if (busy) return announcer.announce("Server busy",4,['yel'])
             busy = true
