@@ -506,7 +506,7 @@ let minutes = 1000 * 60;
     }
     if (step %10 == 9){
         Object.values(server.clients).forEach(client=>{
-            if (client.issues && client.state == 'ingame'){
+            if (client && client.issues && client.state == 'ingame'){
                 let game = client.inRooms[0].game;
                 let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1
                 client.issues++
