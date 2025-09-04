@@ -230,6 +230,8 @@ function loadOurSide(game,us,opp) {
 
                 id(`d_${k}`).onmouseenter = ()=>{
                     if (onNextInput) {
+                                                console.log(k)
+
                         id (`d_${k}`).innerHTML = 
                             `
                                 <button id='g_to_0' class='h'>Top</button>

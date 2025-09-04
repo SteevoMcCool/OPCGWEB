@@ -435,6 +435,7 @@ server.disconnect =  (client) => {
     }
 }
 server.setClientResponder('exitRoomGracefully',(client,data)=>{
+    if (!client || client.state != 'ingame' || !client.inRooms.length) return {good:false};
     let game = client.inRooms[0].game;
     let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1
     msgAll(
