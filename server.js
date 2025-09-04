@@ -670,7 +670,7 @@ server.setClientResponder('attachCard',(client,data)=>{
     let game = client.inRooms[0].game;
     let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1  
     if ( game.ownerOf(game.find(uid))!= pnum) return  {good:false,details:'This is not your card'}
-  
+
     if (!game.attach(game.find(uid),game.find(adornee)) && !data.silent) msgAll(
         client.inRooms[0].players,
         -1,
@@ -745,6 +745,7 @@ server.setClientResponder('insertCard',(client,data)=>{
     }
     return {good:true}
 })
+
 server.setClientResponder('chatfc',(client,data)=>{
     if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
     console.log(client.uid,data) 
@@ -756,6 +757,28 @@ server.setClientResponder('chatfc',(client,data)=>{
         game
     )
     return {good:true}
+})
+server.setClientResponder('shakeCard',(client,data)=>{
+    if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
+    client.inRooms[0].forward(client, 'shake',data);
+    return true;
+})
+server.setClientResponder('noteCard',(client,data)=>{
+    if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
+    let {uid,note} = data;
+    let game = client.inRooms[0].game;
+    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1  
+    let card = game.find(uid)
+    if ( game.ownerOf(card)!= pnum) return  {good:false,details:'This is not your card'};
+    card.notes[0] = note;
+    if (!data.silent)   msgAll(
+        client.inRooms[0].players,
+        -1,
+        (note && note.length) ? `$[@${client.uid}]  added note to $[#${uid}]: <br> ""${note}""`: `$[@${client.uid}]  removed note from $[#${uid}]`,
+        game,
+        client.uid
+    );
+    return true
 })
 server.setClientResponder('catchup',(client,data)=>{
      if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}

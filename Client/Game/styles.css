@@ -275,6 +275,21 @@ button.emoji {
     position: relative;
     top: 0px
 }
+#g_upNote,#g_remNote {
+    margin-top: 4px;
+    border-radius: 10px;
+}
+.note {
+    pointer-events: none;
+    position: absolute;
+    top:60%; 
+    transform: translate(0, -60%);
+    width: 100%;
+    background-color: rgba(30,30,30,0.7);
+    color: rgb(100,227,100);
+    text-align: center;
+    font-size: 1.21em;
+}
 .card, .deck {
     height: 95%;
     position: relative;
@@ -282,8 +297,12 @@ button.emoji {
     aspect-ratio:5 / 7;
     margin:auto auto;
     margin-top: 2.5%;
-        transform-style: preserve-3d;
+    transform-style: preserve-3d;
     transition: all 0.3s;
+
+}
+.p {
+        border: 2px solid red;
 
 }
 .deck {

@@ -197,7 +197,7 @@ function expandDeck(deck,name,us){
                 };
             }
             carddiv.onmouseleave = ()=>{
-                carddiv.innerHTML = card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : ""
+                carddiv.innerHTML = (card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : "") 
             }
         })
 }   
@@ -292,11 +292,13 @@ function loadOurSide(game,us,opp) {
             }else{
                 html.innerHTML = ''
                 v.forEach(card=>{
-                    html.innerHTML+= `
+
+                    html.insertAdjacentHTML('beforeEnd', `
                         <div class='card gbg ourcard' style="background-image:url('${card.image}')" id='g_c_${card.uid}'>
-                            ${card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : ""}
+                            ${card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : "" /*DOESNT WORK*/} 
+                            <div class='note'>${card.notes[0] || ''}</div>
                         </div>
-                    `
+                    `)
                     let ch = ''
                     let i = 2;
                     card.attached.forEach(ac => {
@@ -317,7 +319,7 @@ function loadOurSide(game,us,opp) {
                         `;
                         i++;
                     });
-                    id(`c_${card.uid}`).innerHTML = ch
+                    id(`c_${card.uid}`).innerHTML += ch
                     if (!card.active) id(`c_${card.uid}`).style.transform = 'rotate(90deg)'
 
                 })
@@ -329,7 +331,8 @@ function loadOurSide(game,us,opp) {
                 v.forEach(card=>{
                     s+= `
                         <div class='card gbg ourcard' style="background-image:url('${card.image}')" id='g_c_${card.uid}'>
-                            ${card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : ""}
+                            ${card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : "" /*WORKS FINE*/}
+                            <div class='note'>${card.notes[0] || ''}</div>
                         </div>
                     `
                 })
@@ -505,6 +508,7 @@ function loadOppSide(game,us,opp){
                     html.innerHTML+= `
                         <div class='card gbg oppcard' style="background-image:url('${card.image}')" id='g_c_${card.uid}'>
                             ${card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : ""}
+                            <div class='note'>${card.notes[0] || ''}</div>
                         </div>
                     `
                     let ch = ''
@@ -540,6 +544,7 @@ function loadOppSide(game,us,opp){
                     s+= `
                         <div class='card gbg oppcard' style="background-image:url('${card.image}')" id='g_c_${card.uid}'>
                             ${card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : ""}
+                            <div class='note'>${card.notes[0] || ''}</div>
                         </div>
                     `
                 })
@@ -800,16 +805,64 @@ document.oncontextmenu = (e)=>{
 
     }
 }
+
 document.onkeyup = (event)=>{
     let key = event.key.toLocaleUpperCase()
     kd[key] = false
+    console.log(document.activeElement.value )
     if (!event.shiftKey && (key == 'ENTER' || key == 'RETURN') ){
-        id('send').onclick()
-    }else if (key == 'N'){
-        
-    }else if (key == 'S'){
+        (id('upNote') || id('send')).onclick()
+    }else if ((key == 'N' || key=='W') && !document.activeElement.value){
+        if (hoverCard >=0 && !expandedDeck && !document.querySelector('.overlay')){
+            let card = cardsInGame[hoverCard] || {}
+            document.body.insertAdjacentHTML('beforeend',`
+            <div class="overlay" id='g_addNote'>
+            <center> <h1 style='background-color:rgb(0,0,0,0.3) ; color:white'> Card Notes </h1> </center>
+                <div class = "twc gbg" style='padding-left:0.5em;height: 70vh; background-color: rgb(234,234,234); border-radius:4vh;display:flex'>
+                    <div class='card gbg' style="background-image: url('${card.image}')">
+                    </div>
+                    <div style='position:relative;top:0px'>
+                        <br>
+                        <center> 
+                            <textarea style='width:85%; height:65%;font-size:1.2em;padding:4px' id='g_noteIn'>${card.notes[0] || ''}</textarea>
+                            <button id='g_upNote'>Update Note</button> <br>
+                            <button id='g_remNote' style='background-color:red'; >Remove Note</button>
+                            <button style='background-color:orange; position:absolute; bottom:0px;transform:translate(-50%,-50%); left:50%' id='g_exitnt' class='exit'>EXIT</button
+                        </center>
+                    </div>
+                </div>
 
-    }else if (key=='M'){
+            </div>`
+            )
+        
+            id('noteIn').focus()
+            id('upNote').onclick = ()=>{
+                let v = id('noteIn').value + ''
+                if (v.length)connection.request("noteCard",{
+                    from: userId,
+                    note: v,
+                    uid: hoverCard
+                })
+                setTimeout(()=>id('addNote').remove(),1)                
+            }
+            id ('remNote').onclick = ()=>{
+                connection.request("noteCard",{
+                    from: userId,
+                    note: '',
+                    uid: hoverCard
+                })
+                setTimeout(()=>id('addNote').remove(),1)                       
+            }
+            if (!id(`c_${hoverCard}`).className.includes('ourcard')) (id('upNote').remove() + id('remNote').remove() + (id('noteIn').readOnly =true));
+            id('exitnt').onclick = ()=> id('addNote').remove()
+        }
+    }else if (key == 'S' && !document.activeElement.value){
+        if (hoverCard >=0){
+            busy = true
+            connection.request('shakeCard',hoverCard)
+            sleep(300).then(()=>busy=false)
+        }
+    }else if (key=='M' && !document.activeElement.value){
         if (event.altKey && !onNextInput && hoverCard >=0){
             console.log('hi')
             busy = true
@@ -835,11 +888,11 @@ document.onkeyup = (event)=>{
                 }               
             })
         }
-    }else if (key.charCodeAt(0) > '0'.charCodeAt(0) && key.charCodeAt(0) <= '9'.charCodeAt(0) ) {
+    }else if (key.charCodeAt(0) > '0'.charCodeAt(0) && key.charCodeAt(0) <= '9'.charCodeAt(0) && !document.activeElement.value) {
         nextInputCount = key.charCodeAt(0) - '0'.charCodeAt(0);
         (id('r2num') || {}).innerHTML = key;
         console.log(nextInputCount)
-    }else if (key=='ESC' || key == 'ESCAPE' || key == 'BACKSPACE'){
+    }else if (key=='ESC' || key == 'ESCAPE' || key == 'BACKSPACE' && !document.activeElement.value){
         document.querySelectorAll('.exit').forEach(bu=>{
             bu.onclick()
         }) 
@@ -896,15 +949,33 @@ connection.setResponder("chat",(data)=>{
     `)
     return true;
 })
+connection.setResponder("shake", (data)=>{
+    let carddiv = id(`c_${data}`)
+    if (!carddiv) id('msgs').insertAdjacentHTML('afterbegin',`
+        <div class="msg" style = 'background-color:rgb(255,95,95)'>
+            <p>note: shook card that's offscreen.</p>
+        </div>
+    `) ; 
+    else {
+        carddiv.style.transform = 'scale(1.2) ' + carddiv.style.transform
+        let i = 0
+        let x = setInterval(()=>{
+            let c = Math.sin(i)
+            carddiv.style.left = 50*c 
+            i+=1.1
+        },30)
+        setTimeout(()=>clearInterval(x) + (carddiv.style.transform=carddiv.style.transform.substring(11)) + (carddiv.style.left=0) ,450)
+    }
+})
 
 
 setInterval(()=>{
     if (hoverCard >=0) {
         id('bigAhhCard').style.backgroundImage = `url('${cardsInGame[hoverCard].image}')`
-        id('bigAhhCard').innerHTML = `${cardsInGame[hoverCard].name} (cost: ${cardsInGame[hoverCard].cost})`
+        //id('bigAhhCard').innerHTML = `${cardsInGame[hoverCard].name} (cost: ${cardsInGame[hoverCard].cost})`
     }else{
         id('bigAhhCard').style.backgroundImage = ''
-        id('bigAhhCard').innerHTML = ''        
+        //id('bigAhhCard').innerHTML = ''        
     }
 },50)
 

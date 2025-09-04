@@ -11,9 +11,15 @@ class CARD {
         this.cost = cost
         this.revealed = [0,0]
         this.attached = []
-        this.where = where
         this.active = true;
         this.notes = []
+        this.attached.where = where
+    }
+    get where(){
+        return this.attached.where
+    }
+    set where(v){
+        this.attached.where = v
     }
     tap(){
         this.active = !this.active
@@ -113,6 +119,7 @@ class GAME {
             console.log("Moved ", DA.length);
             c.active = false;
         }
+        card.notes = []
         if (revealed) card.revealed = revealed
     }
     
