@@ -1,3 +1,40 @@
+
+.bg {
+    background-image: url('https://wallpapers-clan.com/wp-content/uploads/2025/01/one-piece-monkey-d-luffy-peaceful-sea-desktop-wallpaper-preview.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(5px);
+    position: fixed;
+    top: -5px;
+    left: -5px;
+    width: calc(100vw + 10px);
+    height: calc(100vh + 10px);    
+    z-index: -2;
+}
+a, a:visited {
+    color: rgb(80,140,250);
+    background-color: rgba(20,20,20,0.7);
+    transition: all;
+
+}
+.gb2 {
+       background-position: center;
+    background-size: contain; 
+    background-repeat: no-repeat;
+}
+
+a:hover {
+    color: #fdde0a;
+}
+a:active, a:focus{
+    color: rgb(100,200,100);
+
+}
+#l_fdiv {
+ position: relative;
+ top: 0px;   
+}
 .Announcer {
     position: fixed;
     right:10px;
@@ -8,7 +45,7 @@
     max-height: 50vh;   
     overflow: hidden;
     pointer-events: none;
-    z-index: 100;
+    z-index: 100000;
 }
 
 .Message {
@@ -33,5 +70,90 @@
     background-color: rgb(200,50,50);
     color: rgb(85,15,15);
     border: 2px solid rgb(85,15,15);
+}
+body{
+    margin: 0px;
+    background-image: linear-gradient(160deg, rgb(80,140,250),rgb(100,227,100));
+    overflow: hidden;
+
+}
+
+.uname {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+.uname > button {
+    margin-left: 5px;
+    padding: 3px;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+h2 {
+    font-size: 2em;
+    margin: 5px;
+}
+button {
+        transition: all 0.3s;
+}
+button:hover, #p_pfpOpts > div:hover {
+    scale: 1.055;
+    filter: brightness(1.022);
+}
+button:active, #p_pfpOpts > div:active  {
+    scale: 0.95;
+    filter: brightness(0.98);
+}
+
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top:0px;
+    left:0px;
+    background-color: rgba(127,127,127,0.4);
+    z-index: 999;
+}
+
+.twc {
+    position: absolute;
+    top:50%; left:50%;
+    transform: translate(-50%, -50%);
+}
+
+.gbg {
+    background-position: center;
+    background-size: cover;
+}
+
+#l_loginbu {
+    background-color: rgb(100,227,100);
+    border-top: 2px solid rgb(100,200,100);
+    border-left: 2px solid rgb(100,200,100);
+    border-bottom: 2px solid rgb(60,100,60);
+    border-right: 2px solid rgb(60,100,60);
+    padding: 3px 10px;
+    border-radius: 200px;
+}
+#l_main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    width: 30vw;
+    margin:  12px 20px;
+}
+
+input {
+    all: unset;
+    border-bottom: 2px solid black;
+    transition: all 0.2s;
+    background-image: linear-gradient(0turn,rgba(255,255,255,0.5),35%,rgba(255,255,255,0));
+
+}
+input:hover, input:focus{
+    background-image: linear-gradient(0turn,rgba(255,255,255,1),35%,rgba(255,255,255,0));
 }
 

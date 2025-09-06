@@ -38,3 +38,8 @@
     color: rgb(85,15,15);
     border: 2px solid rgb(85,15,15);
 }
+body{
+    margin: 10px;
+    background-image: linear-gradient(160deg, rgb(80,140,250),rgb(100,227,100));
+    overflow: hidden;
+}

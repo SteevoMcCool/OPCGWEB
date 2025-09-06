@@ -169,12 +169,12 @@ class GAME {
     }
     nameOf(zone){
         for (let [k,v] of Object.entries(this.player1)) {
-            if (v==zone) return `P1-${k}`;
+            if (v==zone) return k;
         }
         for (let [k,v] of Object.entries(this.player2)) {
-            if (v==zone) return `P2-${k}`;
+            if (v==zone) return k;
         }
-        return 'NULLZONE'
+        return 'ATTACHED'
     }
     exportFor(playerNum){
         playerNum--; //shifts from 1-index to 0-index

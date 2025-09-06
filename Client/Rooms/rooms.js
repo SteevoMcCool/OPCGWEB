@@ -38,15 +38,13 @@ id('newRoom').onclick = ()=>{
         if (data.roomCode) {
             document.body.insertAdjacentHTML("beforeend",
                 `<div class="overlay">
-                    <div class = "twc gbg" style='width:70vw; height: 70vh; background-color: rgb(100,160,220); border-radius:4vh;'>
+                    <div class = "twc gbg" style='width:70vw; height: 70vh; background-color: rgb(100,160,220); box-shadow: 0px 0px 2px black; border-radius:4vh;'>
+                        <center>
                         <h2>Room Code: ${data.roomCode}</h2>
-                        <p> Room Type: 
-                            <input type='radio' name='roomType' id='r_standard' checked> <label for='r_standard'> Standard </label>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <input type='radio' name='roomType' id='r_custom'>  <label for='r_custom'> CC-Lists </label>
-                        </p>
+                        <p>Send the code to your friend so they can join!</p>
                         <br><br>
                         <button id='r_cancel'>Cancel</button>
+                        </center>
                     </div>
                 </div>`
             )     
@@ -66,3 +64,5 @@ id('joinRoom').onclick = ()=>{
         
     })
 }
+import { genFire } from '../campfire.js';
+genFire(id('fdiv'),0.25,8)

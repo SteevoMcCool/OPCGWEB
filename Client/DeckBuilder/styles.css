@@ -20,11 +20,14 @@ body {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    background-color: beige;
 }
 #d_searchzone {
     padding: 5px;
     display: flex;
     flex-wrap: wrap;
+    background-color: beige;
+
 }
 
 #d_deck {
@@ -32,6 +35,7 @@ body {
     display: grid;
     grid-template-rows: 70% 30%;
     grid-template-columns: 100%;
+    background-color: gray;
 }
 
 #d_leaderzone {
@@ -87,6 +91,7 @@ body {
     display: grid;
     grid-template-columns: 70% 30%;
     grid-template-rows: 100%;
+    background-color: rgb(100,227,100);
 }
 #d_save {
     display: flex;
@@ -102,6 +107,7 @@ body {
 
 #d_stats{
     border: 2px solid black;
+    background-color: rgb(80,140,250);
 }
 .colorselect {
     position: relative;
@@ -263,7 +269,17 @@ body {
     display: flex;
 
 }
-input {
+input {button {
+        transition: all 0.3s;
+}
+button:hover, #p_pfpOpts > div:hover {
+    scale: 1.055;
+    filter: brightness(1.022);
+}
+button:active, #p_pfpOpts > div:active  {
+    scale: 0.95;
+    filter: brightness(0.98);
+}
     width: 10em;
 }
 input[type='number'] {
@@ -350,3 +366,16 @@ input[type='checkbox']{
     scale:1.15
 }
 
+
+
+button {
+        transition: all 0.3s;
+}
+button:hover, #p_pfpOpts > div:hover {
+    scale: 1.055;
+    filter: brightness(1.022);
+}
+button:active, #p_pfpOpts > div:active  {
+    scale: 0.95;
+    filter: brightness(0.98);
+}

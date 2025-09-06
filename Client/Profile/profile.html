@@ -3,12 +3,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+    <link rel="stylesheet" href="p_styles.css">
+
 </head>
 <body>
-    <h2 id="username"></h2>
-    <p id="email"></p>
-    <p id="userId"></p>
-    <button id="logout">...</button>
+    <h1 style="position: absolute;margin: 8px;">OPCG Web Profile</h1>
+    <div style="width: 50vw; position: relative; top: 0px; height: 100vh;">
+        <center >
+            <div  style="margin-left: 4vw;width: 40vh; border: 2px solid black;padding: 5px; border-radius: 20px; background-color: rgba(240,240,240,0.5);" class="twc">
+                    <div class="gbg pfp" id='p_pfp'><button id="p_editpfp">✏️</button></div>
+                    <div class="uname"><h2 id="p_username"></h2> <button id="p_editUsername">✏️</button> </div>
+                    <p id="p_email"></p>
+                    <p id="p_userId"></p>
+                    <button id="p_logout">Logout</button>
+            </div>
+        </center>
+    </div>
+    <div style="width: 50vw; position: relative; top: 0px; height: 100vh; display: flex;justify-content: right;">
+            <div  style="width: 40vh; height:100vh; margin-right: 7vw;"  id="p_fdiv">
+
+            </div>
+    </div>
+
     <script src="nav.js"></script>
     <script type="module" src="profile.js"></script>
 </body>

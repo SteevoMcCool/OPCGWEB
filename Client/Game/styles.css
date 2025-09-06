@@ -5,9 +5,12 @@
     top:0px;
 }
 #g_toptions {
-    height: calc(calc(100vh - 30px) / 3);
+    height: calc(calc(100vh - 1.137em) / 3);
     width: 100%;
-    overflow-y: auto;
+    overflow: hidden;
+    background-color: beige;
+    position: relative;
+    top:0px
 }
 #g_midicons {
     padding-bottom: 1px;
@@ -15,30 +18,21 @@
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     width: 100%;
+    height: 1.137em;
+    background-color: rgb(100,227,100);
 }
 html {
   overflow-x: auto; /* horizontal scroll enabled */
   overflow-y: hidden; /* hide vertical scrollbar */
 }
-html::-webkit-scrollbar {
-  height: 6px;  /* horizontal scrollbar thickness */
-  width: 0;     /* vertical scrollbar hidden */
-}
 
-html::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-html::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.4);
-  border-radius: 3px;
-}
 
 #g_chat {
-    height:  calc(calc(100vh - 30px) / 1.5);
+    height:  calc(calc(100vh - 1.137em) / 1.5);
     width: 100%;
     display: flex;
     flex-direction: column;
+    background-color: rgb(210,210,210);
 }
 #g_msgs {
     height: 100%;
@@ -49,10 +43,21 @@ html::-webkit-scrollbar-thumb {
 }
 #g_msgs h4 {
     margin: 2px;
+    padding: 0px;
 }
 #g_msgs p {
-    margin: 2px;
-    border-bottom: 1px solid black;
+    padding: 2px;
+    margin: 0px;
+}
+.Server {
+    background-image: linear-gradient(0turn, rgba(210,210,210,1),10%,rgba(160,160,160,1),rgba(160,160,160,0));
+
+}
+.You {
+    background-image: linear-gradient(0turn, rgba(120,200,255,1),10%,rgba(120,150,235,1),rgba(120,150,235,0.5));
+}
+.Opponent {
+    background-image: linear-gradient(0turn,rgba(255,200,120,1),10%,rgba(235,150,120,1),rgba(235,150,120,0.5));
 }
 #g_chatinput{
     display: flex;
@@ -78,6 +83,7 @@ html::-webkit-scrollbar-thumb {
     height: 100vh;
     position: relative;
     top:0px;
+    background-color: beige;
 }
 
 
@@ -104,11 +110,16 @@ html::-webkit-scrollbar-thumb {
     grid-template-rows: 36% 36% 28%;
     width: 50vw;
     height: 50vh;
-    background-color: beige;
+  
+}
+#g_usBoard {
+    background-color: rgb(168,190,245);
 }
 
 #g_oppBoard{
     transform: scaleY(-1);
+    background-color: rgb(245,190,168);
+
 }
 #g_oppBoard > * {
     transform: scaleY(-1);
@@ -338,6 +349,7 @@ button.emoji {
 }
 #g_edTop{
     background-color: rgb(100,227,100);
+    text-align: center;
 }
 #g_edBottom{
     display: flex;
@@ -351,6 +363,32 @@ button.emoji {
     height: 100%;
     overflow: visible;
 }
+
+#g_pos {
+    overflow: hidden;
+}
+#g_moveUp, #g_moveDown {
+    border-radius: 20px;
+}
+#g_moveToTop #g_moveToBtm {
+    border-radius: 0px;
+    margin: 2px;
+    color: red;
+}
+#g_moveTo{
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+#g_moveTo > button {
+    background-color: rgba(20,20,20,0.6);
+    color: white;
+    border: 1px solid white;
+    margin: 0px;
+    padding: 1px;
+}
+
 #g_usExtraZones, #g_oppExtraZones {
     height:22%;
     display: flex;
@@ -429,4 +467,42 @@ button:active{
 
 #g_attachCard {
     background-color: rgb(120,120,120);
+}
+
+#g_dispYou, #g_dispOpp {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 50%;
+    top:0%;
+    background-image: linear-gradient(0turn, rgba(120,120,255,1),10%,rgba(120,150,235,0.5),45%, rgba(0,0,0,0));
+}
+#g_opppfp, #g_yourpfp {
+    aspect-ratio: 1;
+    border-radius: 20%;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+#g_opppfp {
+        margin-top: 15px;
+    margin-bottom: 5px;
+
+}
+#g_dispOpp {
+    flex-direction: row-reverse;
+    text-align: right;
+    background-image: linear-gradient(0.5turn,rgba(255,120,120,1),10%,rgba(235,150,120,0.5),45%,rgba(0,0,0,0));
+
+}
+
+#g_dispYou h3 , #g_dispOpp h3 {
+    font-size: 1.5em;
+    margin: 3px;
+    margin-top: 20px;
+}
+#g_dispYou p , #g_dispOpp p {
+    font-size: 1em;
+    margin: 1px;
 }

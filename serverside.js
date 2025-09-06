@@ -10,7 +10,9 @@ const contentTypes = {
     'json': 'application/json',
     'png': 'image/png',
     'jpg': 'image/jpeg',
-    'gif': 'image/gif'
+    'gif': 'image/gif',
+    'ttf': 'font/ttf'
+
 }
 const ERRORCODES = {
     internal:   1011,

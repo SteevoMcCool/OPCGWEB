@@ -48,6 +48,17 @@ function rngWord(i,allowSpecials=1){
     if (i <= 0) return ''
     return alphabet[randInt(62 + allowSpecials*2)] + rngWord(i-1,allowSpecials)
 }
+let allowedProfileImages = [
+    'https://i.pinimg.com/736x/1a/e3/8b/1ae38b5d8d53173046e9107f6ad4a329.jpg', //luffy
+    'https://seakoff.com/cdn/shop/articles/exploring-zoro-from-one-piece-the-legendary-swordsman-and-his-epic-battles-299359.jpg?v=1718531298', //zoro
+    'https://us.oricon-group.com/upimg/detail/5000/5194/img660/onepiece-nami-birthday-2025-01.jpg', //nami
+    'https://i.pinimg.com/736x/5c/38/fc/5c38fcfe181a1da8b511775e30042b33.jpg', //shanks
+    'https://static0.cbrimages.com/wordpress/wp-content/uploads/2024/09/crocodile.jpg', //crocodile
+    'https://static.beebom.com/wp-content/uploads/2024/05/Dr.-Vegapunk.jpg', //vegapunk
+    'https://static0.cbrimages.com/wordpress/wp-content/uploads/2019/11/Featured-Things-About-Eustass-Kid.jpg', //kidd
+    'https://static0.srcdn.com/wordpress/wp-content/uploads/2024/03/kaido-hybrid-form.jpg' // kaido
+]
+let correspondingNames =  ['Luffy', 'Zoro', 'Nami', 'Shanks', 'Croc', 'Vegapunk','Kid', 'Kaido']
 server.app.get("/loginep", async (req, res)=>{
        res.set({
         'Cache-Control': 'no-cache',
@@ -86,14 +97,14 @@ server.app.get("/verify", async (req,res) =>{
     let user = sres.data;
     let session = rngWord(256)
     console.log(user)
-
+    let idx= randInt(allowedProfileImages.length)
     if (!user) {
         let sres = await SUPA.from('Users').insert({
             email,
             sessions: [session],
             memberType: 1,
-            name: "Luffy " + (Math.floor(Math.random()*9000)+1000),
-            profileImage: 'https://i.pinimg.com/736x/1a/e3/8b/1ae38b5d8d53173046e9107f6ad4a329.jpg'
+            name:  correspondingNames[idx] + " " + (Math.floor(Math.random()*9000)+1000),
+            profileImage: allowedProfileImages[idx]
         }).select().maybeSingle()
         if (sres.error) res.send(`<p>Unlikely Error: ${sres.error}</p>`)
         console.log(sres)
@@ -216,6 +227,31 @@ server.app.post("/logoutep", async (req, res)=>{
 
 })
 
+server.app.post("/editUname",async (req, res) => {
+    let body = JSON.parse(req.body); //expecting: id, session, name
+    let sres = await SUPA.from("Users").select().eq("id",body.id).maybeSingle();
+    if (sres.error | !sres.data) return res.send(JSON.stringify({good:false,details:"Unknown error occurred"}))
+    let bad = true
+    sres.data.sessions.forEach(sesh => sesh == body.session ? bad = false : false)
+    if (bad) return res.send(JSON.stringify({good:false,details:"Auth Error- please try logging back in."}))
+    console.log(body) 
+    sres = await SUPA.from("Users").update({name:body.name}).eq('id',body.id)
+    if (sres.error)return res.send(JSON.stringify({good:false,details:"Error saving changes- please try again."}))
+    return res.send(JSON.stringify({good:true,details:"Name Edited Successfully"}))
+})
+server.app.post("/editPfp",async (req, res) => {
+    let body = JSON.parse(req.body); //expecting: id, session, profileImage
+    let sres = await SUPA.from("Users").select().eq("id",body.id).maybeSingle();
+    if (sres.error | !sres.data) return res.send(JSON.stringify({good:false,details:"Unknown error occurred"}))
+    let bad = true
+    sres.data.sessions.forEach(sesh => sesh == body.session ? bad = false : false)
+    if (bad) return res.send(JSON.stringify({good:false,details:"Auth Error- please try logging back in."}))
+    console.log(body) 
+    if (!allowedProfileImages.includes(body.profileImage)) return res.send(JSON.stringify({good:false,details:"Invalid Image"}))
+    sres = await SUPA.from("Users").update({profileImage:body.profileImage}).eq('id',body.id)
+    if (sres.error)return res.send(JSON.stringify({good:false,details:"Error saving changes- please try again."}))
+    return res.send(JSON.stringify({good:true,details:"Image Changed Successfully"}))
+})
 
 server.app.post("/persist",async (req, res)=>{
     let bdy = JSON.parse(req.body);
@@ -247,9 +283,13 @@ server.addFile("/announcer.js","./Client/announcer.js","js")
 server.addFile("/clock.js","./Client/clock.js","js")
 server.addFile("/fau.js","./Client/fau.js","js")
 server.addFile("/nav.js","./Client/nav.js","js")
-
 server.addFile("/colorselect.js","./Client/colorselect.js","js")
 server.addFile("/clientside.js","./Client/clientside.js","js")
+server.addFile("/campfire.js","./Client/campfire.js","js")
+
+//Font Files
+server.addFile("/onepiecefont.ttf","./onepiecefont.ttf","ttf")
+
 
 //Home
 server.addFile("/","./Client/Home/index.html","html")
@@ -260,7 +300,7 @@ server.addFile("/h_styles.css", "./Client/Home/styles.css","css")
 //Login
 server.addFile("/login","./Client/Login/login.html",'html')
 server.addFile("/login.js","./Client/Login/login.js",'js')
-server.addFile("/l_styles.css", "./Client/DeckBuilder/styles.css","css")
+server.addFile("/l_styles.css", "./Client/Login/styles.css","css")
 
 //Deck Builder
 server.addFile("/build","./Client/DeckBuilder/build.html","html")
@@ -275,6 +315,7 @@ server.addFile("/cbuild.js","./Client/CDB/build.js","js")
 //Profile 
 server.addFile("/profile","./Client/Profile/profile.html","html")
 server.addFile("/profile.js","./Client/Profile/profile.js","js")
+server.addFile("/p_styles.css","./Client/Profile/styles.css","css")
 
 //Card Uploader
 server.addFile("/upload","./Client/CardUploader/upload.html","html")
@@ -364,7 +405,13 @@ server.setClientResponder('joinRoom',async (client,data)=>{
   //  },1000)
         return true
 })
-
+let showpairs = 
+    [
+        ['oyou',(pnum)=>[pnum==1,pnum==2], 'only themselves'],
+        ['oopp', (pnum)=>[pnum==2,pnum==1], 'only their opponent'],
+        ['nthr', ()=>[0,0], 'nobody'],
+        ['allp',()=>[1,1], 'everyone']
+    ]
 server.setClientResponder("joinMatchmaking",(client,data)=>{
     if (client.state != 'idle') return false;
     client.timeJoinedMatchmaking = Date.now()
@@ -390,6 +437,7 @@ server.clientAdded = function(client,websocket,queryParams){
     client.decks = userCache[client.uid].decks
     client.state = 'idle'
     this.clients[queryParams.clientID] = client;
+
 }
 
 server.disconnect =  (client) => {
@@ -626,7 +674,7 @@ server.setClientResponder('tapCard',(client,data)=>{
     if (!data.silent) msgAll(
         client.inRooms[0].players,
         -1,
-        `$[@${client.uid}] ${game.find(uid) ? 'un':''}tapped $[#${uid}] `,
+        `$[@${client.uid}] ${game.find(uid).active ? 'un':''}tapped $[#${uid}] `,
         game,
         client.uid
     )
@@ -683,6 +731,37 @@ server.setClientResponder('attachCard',(client,data)=>{
     }
     return {good:true}
 })
+function tbmatch(t1=[],t2=[]){
+    if (t1.length != t2.length) return false;
+    for (let i = 0; i < t1.length;i++) if (t1[i] != t2[i]) return false;
+     return true
+}
+server.setClientResponder('revealModeZone',(client, data)=>{
+    if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
+    console.log(client.uid,data) 
+    let name = data.name
+    let game = client.inRooms[0].game;
+    let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1  
+    
+    let zone = game[`player${pnum}`][name]
+    zone.forEach(c => c.revealed = data.revealed)
+    if (!data.silent) msgAll(
+        client.inRooms[0].players,
+        -1,
+        `$[@${client.uid}] revealed  all from ${name} to ${(showpairs.find(zfn=> tbmatch(zfn[1](pnum),data.revealed)) || ['','','??'])[2]}`,
+        game,
+        client.uid
+
+    ); else {
+        return {good:false}
+    }
+    return {good:true}
+})
+function spotName(snum, dlen){
+    if (snum == 0) return 'top'
+    if (snum == dlen) return 'bottom'
+    return 'spot ' + (snum+1)
+}
 
 server.setClientResponder('moveCard',(client,data)=>{
     if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
@@ -693,19 +772,22 @@ server.setClientResponder('moveCard',(client,data)=>{
     let pnum = client.inRooms[0].players.findIndex(uid=>uid==client.uid)+1  
     
     data.spot = data.spot || 0;
-    let btm  =  data.spot == game[`player${pnum}`][name].length
-    if ( game.ownerOf(game.find(uid))!= pnum) return  {good:false,details:'This is not your card'}
-    let extra = name.toLocaleLowerCase().includes('deck') ? (data.spot == 0 ? ' top' : (btm ? ' bottom' : ` spot ${data.spot+1}`)) : ''
+    let card = game.find(uid)
+    if ( game.ownerOf(card)!= pnum) return  {good:false,details:'This is not your card'}
+    let from = game.nameOf(card.where)
+    let ic = card.where.indexOf(card)
+    let extraF = from.toLocaleLowerCase().includes('deck') ? '('+spotName(ic,card.where.length)+')' : ''
+    let extra = name.toLocaleLowerCase().includes('deck') ? '('+spotName(data.spot,game[`player${pnum}`][name].length)+')' : ''
     if (!game.move(
-        game.find(uid),game[`player${pnum}`][name],
-        data.spot, 
+        card,game[`player${pnum}`][name],
+        data.spot, data.revealed ? data.revealed :(
         name.toLocaleLowerCase().includes('deck') || name.toLocaleLowerCase().substring(0,5) == 'ez_xx' ? [0,0]: 
         name.toLocaleLowerCase().includes('hand') || name.toLocaleLowerCase().substring(0,5) == 'ez_0x' ? [pnum == 1, pnum == 2] :
-        [1,1]
+        [1,1])
     ) && !data.silent) msgAll(
         client.inRooms[0].players,
         -1,
-        `$[@${client.uid}] moved $[#${uid}] to ${name}${extra}`,
+        `$[@${client.uid}] moved $[#${uid}] from ${from}${extraF} to ${name}${extra}`,
         game,
         client.uid
 
@@ -780,6 +862,11 @@ server.setClientResponder('noteCard',(client,data)=>{
     );
     return true
 })
+server.setClientResponder('signalRoom',(client,data)=>{
+    if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
+    client.inRooms[0].forward(client, 'signal',data);
+    return true;
+})
 server.setClientResponder('catchup',(client,data)=>{
      if (client.state != 'ingame' || !client.inRooms.length) return  {good:false,details:'Client is not in a game!'}
     let game = client.inRooms[0].game;
@@ -794,7 +881,15 @@ server.setClientResponder('catchup',(client,data)=>{
     return {
         good:true,
         game: game.exportFor(pnum),
-        players:client.inRooms[0].players
+        players:client.inRooms[0].players,
+        pinfo: client.inRooms[0].players.map(id=>{
+            let res = {}
+            if (userCache[id]) {
+                res.pfp = userCache[id].profileImage;
+                 res.name = userCache[id].name
+            }
+            return res;
+        })
     }
 })
 server.setClientResponder('rollDice',(client,data)=>{
@@ -857,13 +952,7 @@ server.setClientResponder('topCardAttachedTo',(client,data)=>{
         uid: card.uid
     }
 })
-let showpairs = 
-    [
-        ['oyou',(pnum)=>[pnum==1,pnum==2], 'only themselves'],
-        ['oopp', (pnum)=>[pnum==2,pnum==1], 'only their opponent'],
-        ['nthr', ()=>[0,0], 'nobody'],
-        ['allp',()=>[1,1], 'everyone']
-    ]
+
 
 showpairs.forEach(pr=>{
     server.setClientResponder(pr[0],(client,data)=>{

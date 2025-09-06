@@ -5,9 +5,11 @@ let id = s => document.getElementById(prefix + s)
 let deb = false;
 //////////////////////////////////////////////////////
 import {Announcer} from './announcer.js'
+import { genFire } from '../campfire.js';
 let announcer = new Announcer("rhrheje");
 async function login(email) {
     if (deb) return true;
+    if (!email.includes('@') || !email.includes('.')) return announcer.announce('Please enter a valid email',4,['rd'])
     deb=true;
     let loginEV = new EventSource(`${host}/loginep?email=${email}`)
     loginEV.addEventListener('open',msg => console.log(msg))
@@ -36,4 +38,4 @@ async function login(email) {
 }
 
 id('loginbu').onclick = ()=> login(id('email').value)
-
+genFire(id('fdiv'),0.25,8)

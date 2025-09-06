@@ -83,6 +83,16 @@ function gather(game){
         })
     })
 }
+function safeguard(f=async()=>{}){
+    return async ()=>{
+        if (busy) return false;
+        busy = true;
+        await f();
+        busy = false;
+    }
+
+}
+let lsl =  0;
 function expandDeck(deck,name,us){
     expandedDeck = [us,name]
     document.querySelectorAll('.overlay').forEach(div=>div.remove())
@@ -92,6 +102,10 @@ function expandDeck(deck,name,us){
                     <div class = "twc gbg expandedDeck">
                         <div id='g_edTop'>
                             ${name}
+                            (${deck.length})
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            ${us ? `<button id='g_edra'>Reveal All</button>
+                            <button id='g_edha'>Hide All</button>` : ''}
                         </div>
                         <div id='g_edBottom'></div>
                     </div>
@@ -99,12 +113,31 @@ function expandDeck(deck,name,us){
         `)
         document.querySelector('.bigredX').onclick = ()=>{
             expandedDeck = false
+            lsl = 0;
             document.querySelector('.overlay').remove()
         }
-        deck.forEach(card=>{
+    
+    id('edBottom').addEventListener('scroll',()=>{
+        lsl = id('edBottom').scrollLeft
+
+    } )
+    if (us) id('edra').onclick = ()=>{
+        if (busy) return false;
+        busy = true 
+        connection.request('revealModeZone',{name,revealed:[1,1]},()=> busy = false)
+    }
+
+    if (us) id('edha').onclick = ()=>{
+        if (busy) return false;
+        busy = true 
+        connection.request('revealModeZone',{name,revealed:[0,0]},()=> busy = false)
+    }
+    deck.forEach((card,i)=>{
+            let tspot = i;
             id('edBottom').insertAdjacentHTML('beforeend', `
                 <div class='card gbg' style="background-image:url('${card.image}')" id='g_ced_${card.uid}'>
                     ${card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : ""}
+                    <p class='br'> ${tspot+1}</p>
                 </div>
             `)
             let carddiv = id(`ced_${card.uid}`)
@@ -113,93 +146,63 @@ function expandDeck(deck,name,us){
                 hoverCard = card.uid
                 if (!us) return 0;
                 carddiv.innerHTML += `
-                    <div class = 'twc' style='width:100%;margin:0px; overflow-y:auto'>
-                    <center>
-                        <div id='g_moveTo'>Move To: <br>
-                            <button id='g_moveToHand'>Hand</button>
-                            <button id='g_moveToPlay'>Play</button>
+                    <div class = 'twc' style='width:100%;margin:0px; overflow-y:auto; '>
+
+                            <div id='g_moveTo'>
+                                <button id='g_moveToHand'>To Hand</button>
+                                <button id='g_moveToPlay'>To Play</button>
+                                <button id='g_moveToMain' name='mainDeck'>To Main</button>
+                                <button id='g_moveToTrash' name='trash'>To Trash</button>
+                                <button id='g_moveToLife' name='lifeDeck'To >Life</button>
+                            </div>
+                            <center id='g_pos'>
+                                <button id='g_moveToTop'> << </button>
+                                <button id='g_moveUp'> < </button>
+                                <button id='g_moveDown'> > </button>
+                                <button id='g_moveToBtm'> >> </button>
+                            </center>
                             <br>
-                            <button id='g_moveToTrash'>Trash</button>
-                            <button id='g_moveToLife'>Life</button>
-                            <br>
-                            <button id='g_moveToTop'>Top</button>
-                            <button id='g_moveToBtm'>Btm</button>
-                        </div>
-                        <br>
-                        <div id='g_show'>Show Mode:<br>
-                        <button id='g_nthr'>..</button>
-                        <button id='g_oyou'>0.</button>
-                        <button id='g_oopp'>.0</button>
-                        <button id='g_allp'>00</button>
-                        </div>
-                    </center>
                     </div>
+                        <div class='showModes' style='display:flex; width:100%;    justify-content: space-around;'> 
+                                <button id='g_nthr' class ='emoji'style="background-image:url('https://i.ibb.co/Tx0J374D/eyesclosed.png')" ></button>
+                                <button id='g_oyou' class='emoji' style="background-image:url('https://i.ibb.co/hxHH4D06/blueeyeopen.png')"></button>
+                                <button id='g_oopp' class='emoji' style="background-image:url('https://i.ibb.co/Cpk12G8Q/redeyeopen.png')"></button>
+                                <button id='g_allp' class='emoji' style="background-image:url('https://i.ibb.co/hxHH4D06/blueeyeopen.png'), url('https://i.ibb.co/Cpk12G8Q/redeyeopen.png')"></button>
+                        </div>
                 `
-                id('moveToHand').onclick = async () => {
-                                    ;
-                    await connection.promise('moveCard', { uid: card.uid, name: 'hand', spot: 0 });
-                    
-                };
 
-                id('moveToPlay').onclick = async () => {
-                                    ;
-                    await connection.promise('moveCard', { uid: card.uid, name: 'characterZone', spot: 0 });
-                    
-                };
 
-                id('moveToTrash').onclick = async () => {
-                                    ;
-                    await connection.promise('moveCard', { uid: card.uid, name: 'trash', spot: 0 });
-                    
-                };
+                id('moveToHand').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name: 'hand', spot: 0 }))
+                id('moveToPlay').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name: 'characterZone', spot: 0 }))
+                id('moveToTrash').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name: 'trash', spot: 0 }))
+                id('moveToLife').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name: 'lifeDeck', spot: 0 }))
+                id('moveToMain').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name: 'mainDeck', spot: 0 }))
 
-                id('moveToLife').onclick = async () => {
-                                    ;
-                    await connection.promise('moveCard', { uid: card.uid, name: 'lifeDeck', spot: 0 });
-                    
-                };
 
-                id('moveToTop').onclick = async () => {
-                                    ;
-                    await connection.promise('moveCard', { uid: card.uid, name, spot: 0 }); 
-                    
-                };
+                id('moveToTop').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name, spot: 0 }))
+                id('moveUp').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name, spot: Math.max(0,tspot-1), revealed:card.revealed}))
+                id('moveDown').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name, spot: Math.min(deck.length,tspot+1), revealed:card.revealed}))
+                id('moveToBtm').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name, spot: deck.length })) 
 
-                id('moveToBtm').onclick = async () => {
-                                    ;
-                    await connection.promise('moveCard', { uid: card.uid, name, spot: deck.length }); 
-                    
-                };
-
+                document.querySelectorAll('button').forEach(bu=>{
+                    if (bu.name == name) bu.remove();
+                })
                 // Show mode handlers
-                id('oyou').onclick = async () => {
-                                    ;
-                    await connection.promise('oyou', { uid: card.uid });
-                    
-                };
+                id('oyou').onclick = safeguard(async () => await connection.promise('oyou', { uid: card.uid }))
 
-                id('oopp').onclick = async () => {
-                                    ;
-                    await connection.promise('oopp', { uid: card.uid });
-                    
-                };
 
-                id('nthr').onclick = async () => {
-                                    ;
-                    await connection.promise('nthr', { uid: card.uid });
-                    
-                };
+                id('oopp').onclick = safeguard(async () => await connection.promise('oopp', { uid: card.uid }))
 
-                id('allp').onclick = async () => {
-                                    ;
-                    await connection.promise('allp', { uid: card.uid });
-                    
-                };
+                id('nthr').onclick = safeguard(async () => await connection.promise('nthr', { uid: card.uid }))
+
+
+                id('allp').onclick = safeguard(async () => await connection.promise('allp', { uid: card.uid }))
             }
             carddiv.onmouseleave = ()=>{
-                carddiv.innerHTML = (card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : "") 
+                carddiv.innerHTML = (card.revealed.reduce((a,b)=>a+b)==1 ? hiddenIconStr : "")  + `<p class='br'> ${tspot+1}</p>`
             }
         })
+    id('edBottom') .scrollLeft = lsl
 }   
 
 function loadOurSide(game,us,opp) {
@@ -531,7 +534,7 @@ function loadOppSide(game,us,opp){
                         `;
                         i++;
                     });
-                    id(`c_${card.uid}`).innerHTML = ch
+                    id(`c_${card.uid}`).innerHTML += ch
                     if (!card.active) id(`c_${card.uid}`).style.transform = 'rotate(90deg)'
 
                 })
@@ -941,9 +944,10 @@ connection.setResponder("chat",(data)=>{
         setupBoard(data.updateState,data.players,data.updateplayers)
          reformat();
     }
+    let c = data.from == -1 ? 'Server' : (data.from == userId ? 'You' : 'Opponent')
     id('msgs').insertAdjacentHTML('afterbegin',`
-        <div class="msg">
-            <h4>${data.from == -1 ? 'Server' : (data.from == userId ? 'You' : 'Opponent')}</h4>
+        <div class="msg ${c}">
+            <h4>${c}</h4>
             <p>${format(data.body)}</p>
         </div>
     `)
@@ -991,6 +995,15 @@ async function main(){
         console.log(res)
     if (res.good){
         setupBoard(res.game,res.players,[1,1])
+        let [u,o] = res.pinfo
+        if (res.players[0] != user.id)   [o,u] = res.pinfo;
+        id('yourpfp').style.backgroundImage = `url("${u.pfp}")`      
+        id('yourname').innerHTML = u.name
+        id('yourid').innerHTML = 'id: ' + user.id
+
+        id('opppfp').style.backgroundImage = `url("${o.pfp}")`      
+        id('oppname').innerHTML = o.name
+        id('oppid').innerHTML = 'id: ' + res.players.find(id=>id != user.id)
     }
 }
 
