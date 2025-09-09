@@ -20,24 +20,22 @@ async function main() {
 
 let deb = false
 id('logout').onclick = async function(){
-    if (deb) return true;
-    deb = true;
-    let res = await fetch('/logoutep',{
-        method:'post',
-        body: JSON.stringify({id:user.id, session:user.session})
-    })
-    let resj = await res.json();
-    if (resj.good) window.location.replace("/login")
-    else document.body.insertAdjacentHTML('beforeend','<p>An error occured!</p>')
-    deb = false;
+    window.localStorage.clear()
+   window.location.replace("/login")
 }
 
 id('editUsername').onclick = async function() {
     document.body.insertAdjacentHTML('beforebegin',`
         <div class='overlay'>
-            <input id='p_newName'>
-            <button id='p_editName'>Confirm Edit</button>
+        <div class='twc' style='width:40vw;height:30vh; background-color:beige;border-radius:30px'>
+            <center>
+            <h2>Editing Username</h2>
+            <input id='p_newName'> <br>
+            <button id='p_editName' class='grbu'>Confirm Edit</button><br><br>
             <button id='p_cancel'>Cancel</button>
+            </center>
+        </div>
+  
         </div>
     `)
     id('newName').value = user.name
@@ -76,11 +74,11 @@ let pfpOptions = [
 id('editpfp').onclick = async function() {
   document.body.insertAdjacentHTML('beforebegin',`
         <div class='overlay'>
-            <div class='twc' style='width:70vw;height:80vh; background-color:beige;border-radius:30px'>
+            <div class='twc' style='width:70vw;height:84vh; background-color:beige;border-radius:30px'>
             <div id='p_pfpOpts'> </div>
             <center>
                 <br>
-                <button id='p_changepfp'>Confirm Change</button>
+                <button id='p_changepfp' class='grbu'>Confirm Change</button>
                 <br><br>
                 <button id='p_cancel'>Cancel</button>
             </center

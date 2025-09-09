@@ -211,6 +211,7 @@ server.app.post('/editep',async (req,res)=>{
             if (body.custom) {
                 let arr = JSON.parse(fs.readFileSync("./Data/ccbase.json").toString())
                 if (body.uid >= arr.length || arr[body.uid].uploader != userId) return res.send(JSON.stringify({good:false,details:"Attempt to edit card not created by you."}))
+                body.uid = Number(body.uid);
                 arr[body.uid] = body
                 fs.writeFileSync("./Data/ccbase.json",JSON.stringify(arr))
                 return res.send(JSON.stringify({good:true, details: "NICE! Please refresh or continue editing"}))
@@ -628,7 +629,7 @@ function shuffle(list) {
 }
 function msgAll(players,from,body,game,eventor){
     for (let i = 0; i < players.length;i++){
-        server.request(Object.values(server.clients).find(c=>c.uid==players[i]) ,'chat',{
+        server.request(Object.values(server.clients).find(c=>c && c.uid==players[i]) ,'chat',{
             from,
             body,   
             updateplayers:eventor ? players.map(z=> z==eventor) : undefined,

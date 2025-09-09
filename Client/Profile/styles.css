@@ -179,3 +179,13 @@ button {
 .selected {
     border-color:rgb(100,227,100) !important;
 }
+
+.grbu {
+    background-color: rgb(100,227,100);
+    border-top: 2px solid rgb(100,200,100);
+    border-left: 2px solid rgb(100,200,100);
+    border-bottom: 2px solid rgb(60,100,60);
+    border-right: 2px solid rgb(60,100,60);
+    padding: 3px 10px;
+    border-radius: 200px;
+}
