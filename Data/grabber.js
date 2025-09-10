@@ -33,7 +33,7 @@ async function main(){
             if (oc) {
                 oc.imgs.push(card.imgs[0])
                 card.imgs = oc.imgs;
-                Object.keys(oc).forEach(key=> oc[key] = card[key])
+                Object.keys(oc).forEach(key=> oc[key] = card)
             }
             else cardbase.push(card)
         })
