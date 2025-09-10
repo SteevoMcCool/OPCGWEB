@@ -588,6 +588,9 @@ let minutes = 1000 * 60;
         })
         now = Date.now()
     }
+
+
+ 
     playersInMatchmaking.forEach((p1,i) => {
         let disparity = 2;
         for (let e = i+1; e < playersInMatchmaking.length; e++){
@@ -598,14 +601,22 @@ let minutes = 1000 * 60;
                 let room = server.newRoom();
                 room.addClient(p1)
                 room.addClient(p2)
+                p1.state = 'ingame'
+                p1.roomId = room.roomInfo.id
+                p2.state = 'ingame'
+                p2.roomId = room.roomInfo.id
                 room.players = randInt()%2 ? [p1.uid,p2.uid] : [p2.uid,p1.uid];
+            room.gameType = 1
+        room.game = new GAME()
                 server.request(p1,'matchFound',{
                     other:p2.uid,
-                    roomId: room.roomInfo.id
+                    roomId: room.roomInfo.id,
+                    gameType: 1
                 });
                 server.request(p2,'matchFound',{
                     other:p1.uid,
-                    roomId: room.roomInfo.id
+                    roomId: room.roomInfo.id,
+                    gameType: 1
                 })
                 p1.timeJoinedMatchmaking = null;
                 p2.timeJoinedMatchmaking = null;
