@@ -145,8 +145,11 @@ function expandDeck(deck,name,us){
                 console.log('me')
                 hoverCard = card.uid
                 if (!us) return 0;
+                         document.querySelectorAll('.options').forEach(div=>div.remove())
+               
                 carddiv.innerHTML += `
-                    <div class = 'twc' style='width:100%;margin:0px; overflow-y:auto; '>
+                <div class='options'>
+                    <div class = 'twc ' style='width:100%;margin:0px; overflow-y:auto; '>
 
                             <div id='g_moveTo'>
                                 <button id='g_moveToHand'>To Hand</button>
@@ -169,7 +172,7 @@ function expandDeck(deck,name,us){
                                 <button id='g_oopp' class='emoji' style="background-image:url('https://i.ibb.co/Cpk12G8Q/redeyeopen.png')"></button>
                                 <button id='g_allp' class='emoji' style="background-image:url('https://i.ibb.co/hxHH4D06/blueeyeopen.png'), url('https://i.ibb.co/Cpk12G8Q/redeyeopen.png')"></button>
                         </div>
-                `
+                </div>`
 
 
                 id('moveToHand').onclick = safeguard(async () => await connection.promise('moveCard', { uid: card.uid, name: 'hand', spot: 0 }))
@@ -232,14 +235,18 @@ function loadOurSide(game,us,opp) {
                 }
 
                 id(`d_${k}`).onmouseenter = ()=>{
+                        document.querySelectorAll('.options').forEach(div=>div.remove())
                     if (onNextInput) {
                                                 console.log(k)
-
-                        id (`d_${k}`).innerHTML = 
+                        id(`d_${k}`).querySelectorAll('p').forEach(p=>p.remove())
+                        id (`d_${k}`).insertAdjacentHTML('beforeend',
                             `
+                            <div class='options'>
                                 <button id='g_to_0' class='h'>Top</button>
                                 <button id='g_to_${v.length}'  class='h'>Bottom</button>
+                            </div>
                             `
+                        )
                         id('to_0').onclick = ()=>{
                             console.log('clicktop')
                             nextInputCall({is:'Zone', spot: 0, name: k })
@@ -251,14 +258,15 @@ function loadOurSide(game,us,opp) {
                     }else{
                         id (`d_${k}`).innerHTML = 
                             `
+                            <div class = 'options'>
                                 <button id='g_movetop'>Move Top</button>
 
                                 <button id='g_expand'>Expand</button>
                                 <button id='g_shuffle'>Shuffle</button>
+                            </div>
                             `
                         id(`movetop`).onclick = async ()=>{
                             if (!v.length) return announcer.announce(`${k} is empty`,4,['rd'])
-                            await sleep(10);
                             document.querySelectorAll('.ourcard').forEach(card=>{
                                 card.style.pointerEvents = 'none'
                             })
@@ -267,6 +275,8 @@ function loadOurSide(game,us,opp) {
                             console.log("good")
                             let z = [v[0]]
                             let i = 0
+                        document.querySelectorAll('.options').forEach(div=>div.remove())
+
                             onNextInput = async (data={})=>{
                                 console.log(data)
                                 if (i >=v.length) return announcer.announce(`${k} is empty`,4,['rd'])
@@ -372,7 +382,7 @@ function loadOurSide(game,us,opp) {
         carddiv.onmouseenter = ()=>{
             hoverCard = uid
                 if (onNextInput) return false;
-
+            document.querySelectorAll('.options').forEach(div=>div.remove())
             carddiv.innerHTML += `
                 <div class = 'twc options' style='width:100%;height:100%;margin:0px; overflow-y:auto'>
                     <center style='margin-top:10px'>
@@ -481,22 +491,14 @@ function loadOppSide(game,us,opp){
                 `; 
                 }
                 id(`d_${k}_o`).onmouseenter = ()=>{
+                    document.querySelectorAll('.options').forEach(div=>div.remove())
                     if (onNextInput) {
-                        id (`d_${k}_o`).innerHTML = 
-                            `
-                                <button id='g_to_0' class='h'>Top</button>
-                                <button id='g_to_${v.length}' class='h'>Bottom</button>
-                            `
-                        id('to_0').onclick = ()=>{
-                            nextInputCall({is:'Zone', spot: 0, name: k })
-                        }
-                        id(`to_${v.length}`).onclick = ()=>{
-                            nextInputCall({is:'Zone', spot: v.lengt, name: k })
-                        }
+
                     }else{
                         id (`d_${k}_o`).innerHTML = 
-                            `
+                            `   <div class ='options'>
                                 <button id='g_expand'>Expand</button>
+                                </div>
                             `
                         id('expand').onclick = ()=> expandDeck(v,k,0)
 
@@ -581,6 +583,9 @@ function setupBoard(game,order,updateps){
     if (updateps[order.findIndex(uid=>uid==userId)] ) loadOurSide(game,us,opp),  (nextInputCount <= 1) ?  onNextInput = false :0;
     if (updateps[order.findIndex(uid=>uid!=userId)]) loadOppSide(game,us,opp)
     document.querySelectorAll('.zone').forEach(zonediv=>{
+        let [g,name] = zonediv.id.split('_')
+        name = name || "" 
+        if (name.toLocaleLowerCase().includes('deck') || name.toLocaleLowerCase().includes('trash')) return ;
         zonediv.onclick = ()=>{
             if (onNextInput) nextInputCall({name:zonediv.id.split('-')[1],is:'Zone'})
         }
