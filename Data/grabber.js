@@ -30,7 +30,11 @@ async function main(){
                 imgs: [c.images.large]
             }
             let oc = cardbase.find(c=> c.set == card.set && c.iid == card.iid)
-            if (oc) oc.imgs.push(card.imgs[0])
+            if (oc) {
+                oc.imgs.push(card.imgs[0])
+                card.imgs = oc.imgs;
+                Object.keys(oc).forEach(key=> oc[key] = card[key])
+            }
             else cardbase.push(card)
         })
     }    
