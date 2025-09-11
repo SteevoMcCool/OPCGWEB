@@ -147,8 +147,8 @@ server.app.get(`/refinedCardSearch`,async (req,res)=>{
     if (req.query.cus) arr = JSON.parse(fs.readFileSync("./Data/ccbase.json").toString())
     else arr = JSON.parse(fs.readFileSync("./Data/cardbase.json").toString())
     arr = arr
-            .filter(c=>c.name.toLocaleLowerCase().includes(req.query.name.toLocaleLowerCase())) 
-            .filter(c=>c.set.toLocaleLowerCase().includes(req.query.set.toLocaleLowerCase()));
+            .filter(c=>c.name.toLocaleLowerCase().includes((req.query.name || '').toLocaleLowerCase())) 
+            .filter(c=>c.set.toLocaleLowerCase().includes((req.query.name || '').toLocaleLowerCase()));
     console.log(arr)
     res.send(JSON.stringify( arr ) );
 })
