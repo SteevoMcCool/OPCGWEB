@@ -338,6 +338,12 @@ server.addFile("/rooms","./Client/Rooms/rooms.html","html")
 server.addFile("/rooms.js","./Client/Rooms/rooms.js","js")
 server.addFile("/r_styles.css","./Client/Rooms/styles.css","css")
 
+
+//Docs
+server.addFile("/apidocs","./Client/ApiDocs/index.html",'html')
+server.addFile("/docs.js","./Client/ApiDocs/docs.js",'js')
+server.addFile("/astyles.css", "./Client/ApiDocs/astyles.css","css")
+
 //Matchmaking Handlers
 let recentMMRequests = []
 let playersInMatchmaking = []
